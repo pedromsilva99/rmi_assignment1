@@ -28,10 +28,9 @@ class MyRob(CRobLinkAngs):
 
         state = 'stop'
         stopped_state = 'run'
-        self.new = 0
-        self.rotate_counter = 0
         self.turn_left_signal = 0
         self.turn_right_signal = 0
+        self.emergency_signal = 0
 
         while True:
             self.readSensors()
@@ -88,35 +87,27 @@ class MyRob(CRobLinkAngs):
         elif self.turn_right_signal==1:
             self.turn_right()
 
-        elif self.measures.irSensor[self.center_id] > 1.0 and self.measures.irSensor[self.right_id] < 0.8:
+        elif self.emergency_signal ==1:
+            self.emergency()
+
+        elif self.measures.irSensor[self.center_id] > 1.2 and self.measures.irSensor[self.right_id] < 1.0:
             self.turn_right_signal = 1
 
-        elif self.measures.irSensor[self.center_id] > 1.0 and self.measures.irSensor[self.left_id] < 0.8:
+        elif self.measures.irSensor[self.center_id] > 1.2 and self.measures.irSensor[self.left_id] < 1.0:
             self.turn_left_signal = 1
         
+        elif self.measures.irSensor[self.right_id] > 4.0:
+            self.turn_slight_left() 
+
+        elif self.measures.irSensor[self.left_id] > 4.0:
+            self.turn_slight_right()
+
+        elif self.measures.irSensor[self.center_id] > 10.0:
+            self.emergency_signal = 1
+
         else:
             print("Em frente")
-            self.driveMotors(0.1,0.1)
-
-        #     if self.measures.irSensor[left_id] > 3.0:
-        #         while(self.rotate_counter<26):
-        #             print("rodou")
-        #             self.driveMotors(-0.1,+0.1)
-        #             self.rotate_counter +=1
-        #             self.new = 1
-        #     if self.measures.irSensor[right_id] > 3.0:
-        #         while(self.rotate_counter<26):
-        #             print("rodou")
-        #             self.driveMotors(0.1,-0.1)
-        #             self.rotate_counter +=1
-        #             self.new = 1
-        #         #if(self.rotate_counter == 26):
-        #         #    self.driveMotors(0,0)
-                
-        # else:
-        #     #if self.new==0:    
-        #     print("holy cow")
-        #     self.driveMotors(0.15,0.15)
+            self.driveMotors(0.07,0.07)
 
         #professor code
         # if    self.measures.irSensor[center_id] > 5.0\
@@ -138,14 +129,36 @@ class MyRob(CRobLinkAngs):
     def turn_right(self):
         print("virando à direita\n")
         self.driveMotors(0.05,-0.05)
-        if self.measures.irSensor[self.center_id] < 0.5 and self.measures.irSensor[self.left_id] > 1.3:
+        if self.measures.irSensor[self.center_id] < 0.8:# and self.measures.irSensor[self.left_id] > 1.3:
             self.turn_right_signal = 0
 
     def turn_left(self):
         print("virando à esquerda\n")
         self.driveMotors(-0.05,0.05)
-        if self.measures.irSensor[self.center_id] < 0.5 and self.measures.irSensor[self.right_id] > 1.3:
+        if self.measures.irSensor[self.center_id] < 0.8: # and self.measures.irSensor[self.right_id] > 1.3:
             self.turn_left_signal = 0
+
+    def turn_slight_left(self):
+        print("ajustando à esquerda\n")
+        self.driveMotors(-0.05,0.05)
+
+    def turn_slight_right(self):
+        print("ajustando à direita\n")
+        self.driveMotors(0.05,-0.05)
+
+    def emergency(self):
+        print("Emergencia\n")
+
+        if self.measures.irSensor[self.center_id] < 2.0:
+            self.emergency_signal = 0
+        elif self.measures.irSensor[self.left_id] < 1.2:
+            print("ajustando à esquerda\n")
+            self.driveMotors(-0.05,0.05)
+        else:
+            print("ajustando à direita\n")
+            self.driveMotors(0.05,-0.05)
+
+
 
 
 class Map():
