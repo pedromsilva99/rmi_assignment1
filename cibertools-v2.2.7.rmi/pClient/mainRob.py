@@ -78,8 +78,6 @@ class MyRob(CRobLinkAngs):
         print("Sensor direito " + str(self.measures.irSensor[self.right_id]))
         print("Sensor frente " + str(self.measures.irSensor[self.center_id]))
         print("Sensor trás " + str(self.measures.irSensor[self.back_id]))
-        print("Signal r " + str(self.turn_right_signal))
-        print("Signal l " + str(self.turn_left_signal))
         
         if self.turn_left_signal==1:
             self.turn_left()
@@ -90,10 +88,13 @@ class MyRob(CRobLinkAngs):
         elif self.emergency_signal ==1:
             self.emergency()
 
-        elif self.measures.irSensor[self.center_id] > 1.2 and self.measures.irSensor[self.right_id] < 1.0:
+        elif self.measures.irSensor[self.center_id] > 6.0:
+            self.emergency_signal = 1
+
+        elif self.measures.irSensor[self.center_id] > 1.1 and self.measures.irSensor[self.right_id] < 1.0:
             self.turn_right_signal = 1
 
-        elif self.measures.irSensor[self.center_id] > 1.2 and self.measures.irSensor[self.left_id] < 1.0:
+        elif self.measures.irSensor[self.center_id] > 1.1 and self.measures.irSensor[self.left_id] < 1.0:
             self.turn_left_signal = 1
         
         elif self.measures.irSensor[self.right_id] > 4.0:
@@ -101,9 +102,6 @@ class MyRob(CRobLinkAngs):
 
         elif self.measures.irSensor[self.left_id] > 4.0:
             self.turn_slight_right()
-
-        elif self.measures.irSensor[self.center_id] > 10.0:
-            self.emergency_signal = 1
 
         else:
             print("Em frente")
@@ -151,12 +149,15 @@ class MyRob(CRobLinkAngs):
 
         if self.measures.irSensor[self.center_id] < 2.0:
             self.emergency_signal = 0
-        elif self.measures.irSensor[self.left_id] < 1.2:
-            print("ajustando à esquerda\n")
+        elif self.measures.irSensor[self.left_id] < 1.5:
+            print("emeregencia à esquerda\n")
             self.driveMotors(-0.05,0.05)
-        else:
-            print("ajustando à direita\n")
+        elif self.measures.irSensor[self.left_id] < 1.5:
+            print("emergencia à direita\n")
             self.driveMotors(0.05,-0.05)
+        else:
+            self.driveMotors(0.05,-0.05)
+            print("Sem saída")
 
 
 
