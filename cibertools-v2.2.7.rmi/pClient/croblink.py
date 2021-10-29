@@ -17,27 +17,27 @@ class CRobLink:
 
         self.sock = socket.socket(socket.AF_INET, # Internet
                              socket.SOCK_DGRAM) # UDP
-        
+
         msg = '<Robot Id="'+str(robId)+'" Name="'+robName+'" />'
-        
+
         self.sock.sendto(msg.encode(), (host, UDP_PORT))  # TODO consider host arg
         data, (host,self.port) = self.sock.recvfrom(1024)
         #print "received message:", data, " port ", self.port
 
         parser = sax.make_parser()
-        
+
         # Tell it what handler to use
         handler = StructureHandler()
         parser.setContentHandler( handler )
-        
-        # Parse reply 
+
+        # Parse reply
 
         d2 = data[:-1]
 #        try:
         sax.parseString( d2, handler )
 #        except SAXParseException:
 #            self.status = -1
-#            return 
+#            return
         self.status = handler.status
 
 
@@ -55,10 +55,10 @@ class CRobLink:
         sax.parseString( d2, handler )
 #        except SAXParseException:
 #            status = -1
-#            return 
+#            return
         self.status = handler.status
         self.measures  = handler.measures
-        
+
     def driveMotors(self, lPow, rPow):
         msg = '<Actions LeftMotor="'+str(lPow)+'" RightMotor="'+str(rPow)+'"/>'
         self.sock.sendto(msg.encode(),(self.host,self.port))
@@ -90,39 +90,39 @@ class CRobLinkAngs(CRobLink):
 
         self.sock = socket.socket(socket.AF_INET, # Internet
                              socket.SOCK_DGRAM) # UDP
-        
+
         msg = '<Robot Id="'+str(robId)+'" Name="'+robName+'">'
         for ir in range(NUM_IR_SENSORS):
             msg+='<IRSensor Id="'+str(ir)+'" Angle="'+str(angs[ir])+'" />'
         msg+='</Robot>'
 
         #print "msg ", msg
-        
+
         self.sock.sendto(msg.encode(), (host, UDP_PORT))  # TODO condider host arg
         data, (host,self.port) = self.sock.recvfrom(1024)
         #print "received message:", data, " port ", self.port
 
         parser = sax.make_parser()
-        
+
         # Tell it what handler to use
         handler = StructureHandler()
         parser.setContentHandler( handler )
-        
-        # Parse reply 
+
+        # Parse reply
 
         d2 = data[:-1]
 #        try:
         sax.parseString( d2, handler )
 #        except SAXParseException:
 #            self.status = -1
-#            return 
+#            return
         self.status = handler.status
 
 class CMeasures:
 
     def __init__ (self):
         self.compassReady=False
-        self.compass=0.0; 
+        self.compass=0.0;
         self.irSensorReady=[False for i in range(NUM_IR_SENSORS)]
         self.irSensor=[0.0 for i in range(NUM_IR_SENSORS)]
         self.beaconReady = False   # TODO consider more than one beacon
@@ -132,14 +132,14 @@ class CMeasures:
         self.groundReady = False
         self.ground = -1
         self.collisionReady = False
-        self.collision = False 
-        self.start = False 
-        self.stop = False 
+        self.collision = False
+        self.start = False
+        self.stop = False
         self.endLed = False
         self.returningLed = False
         self.visitingLed = False
-        self.x = 0.0   
-        self.y = 0.0   
+        self.x = 0.0
+        self.y = 0.0
         self.dir = 0.0
 
         self.scoreReady = False
@@ -171,7 +171,7 @@ class StructureHandler(sax.ContentHandler):
             if "Status" not in attrs.keys():
                 self.status = -1
                 return
-                
+
             if attrs["Status"]=="Ok":
                 self.status = 0
                 return
@@ -194,11 +194,11 @@ class StructureHandler(sax.ContentHandler):
         elif name == "IRSensor":
             id = int(attrs["Id"])
             #print "IRSensor id ", id
-            if id < NUM_IR_SENSORS: 
+            if id < NUM_IR_SENSORS:
                 self.measures.irSensorReady[id] = True
                 #print "IRSensor val ", attrs["Value"]
                 self.measures.irSensor[id] = float(attrs["Value"])
-            else: 
+            else:
                 self.status = -1
         elif name == "BeaconSensor":
             id = attrs["Id"]
@@ -251,4 +251,3 @@ class StructureHandler(sax.ContentHandler):
 
 #    def endElement(self, name):
         #print 'End of element:', name
-
