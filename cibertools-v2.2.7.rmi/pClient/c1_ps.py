@@ -105,7 +105,7 @@ class MyRob(CRobLinkAngs):
 
         else:
             print("Em frente")
-            self.driveMotors(0.07,0.07)
+            self.driveMotors(0.10,0.10)
 
         #professor code
         # if    self.measures.irSensor[center_id] > 5.0\
