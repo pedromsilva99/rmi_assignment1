@@ -80,9 +80,9 @@ class MyRob(CRobLinkAngs):
 
         if self.measures.irSensor[center_id] > 2.0:
             # print('Nao vas em frente burro')
-            if self.measures.irSensor[right_id] > 1.7:
+            if self.measures.irSensor[right_id] > self.measures.irSensor[left_id]:
                 self.driveMotors(-0.1, 0.1)
-            elif self.measures.irSensor[left_id] > 1.7:
+            else:
                 self.driveMotors(0.1, -0.1)
         elif self.measures.irSensor[right_id] > 2.7:
             # print('Vira a esquerda')

@@ -70,14 +70,6 @@ class MyRob(CRobLinkAngs):
         back_id = 3
 
 
-        # if self.measures.irSensor[center_id] > 2.0:
-        #     if self.measures.irSensor[right_id] > 2.0:
-        #         self.driveMotors(-0.1, 0.1)
-        #     elif self.measures.irSensor[left_id] > 2.0:
-        #         self.driveMotors(0.1, -0.1)
-        # else:
-        #     self.driveMotors(0.1, 0.1)
-
         if self.measures.irSensor[center_id] > 2.0:
             # print('Nao vas em frente burro')
             if self.measures.irSensor[right_id] > 1.7:
@@ -92,29 +84,11 @@ class MyRob(CRobLinkAngs):
             self.driveMotors(0.1, 0.0)
         else:
             self.driveMotors(0.10, 0.10)
-        if self.measures.ground != -1:
-            print(self.measures.ground)
 
-        ######################################################
-        # Codigo do Prof
-        ######################################################
-        # if self.measures.irSensor[right_id] > 5.0:
-        #     print('right id')
-        # if    self.measures.irSensor[center_id] > 5.0\
-        #    or self.measures.irSensor[left_id]   > 5.0\
-        #    or self.measures.irSensor[right_id]  > 5.0\
-        #    or self.measures.irSensor[back_id]   > 5.0:
-        #     # print('Rotate left')
-        #     self.driveMotors(-0.1,+0.1)
-        # elif self.measures.irSensor[left_id]> 2.7:
-        #     # print('Rotate slowly right')
-        #     self.driveMotors(0.1,0.0)
-        # elif self.measures.irSensor[right_id]> 2.7:
-        #     # print('Rotate slowly left')
-        #     self.driveMotors(0.0,0.1)
-        # else:
-        #     # print('Go')
-        #     self.driveMotors(0.1,0.1)
+
+        print('x: ' + str(self.measures.x))
+        print('y: ' + str(self.measures.y))
+        print('compass: ' + str(self.measures.compass))
 
 class Map():
     def __init__(self, filename):
@@ -144,7 +118,7 @@ class Map():
            i=i+1
 
 
-rob_name = "pClient1"
+rob_name = "pClient2"
 host = "localhost"
 pos = 1
 mapc = None
