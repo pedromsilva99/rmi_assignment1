@@ -1,4 +1,3 @@
-
 import sys
 from croblink import *
 from math import *
@@ -8,6 +7,7 @@ CELLROWS=7
 CELLCOLS=14
 
 class MyRob(CRobLinkAngs):
+
     def __init__(self, rob_name, rob_id, angles, host):
         CRobLinkAngs.__init__(self, rob_name, rob_id, angles, host)
 
@@ -27,8 +27,9 @@ class MyRob(CRobLinkAngs):
 
         state = 'stop'
         stopped_state = 'run'
-        self.background_flag = False
-        self.checkpoint = 0
+        self.turn_left_signal = 0
+        self.turn_right_signal = 0
+        self.emergency_signal = 0
 
         while True:
             self.readSensors()
@@ -63,79 +64,60 @@ class MyRob(CRobLinkAngs):
                 if self.measures.returningLed==True:
                     self.setReturningLed(False)
                 self.wander()
-
-
+            
     def wander(self):
-        center_id = 0
-        left_id = 1
-        right_id = 2
-        back_id = 3
-        checkp = [0,1,2,0]
+        self.center_id = 0
+        self.left_id = 1
+        self.right_id = 2
+        self.back_id = 3
+        
+        print("x: " + str(self.measures.x))
+        print("y: " + str(self.measures.y))
+        print("bussola: " + str(self.measures.compass))
 
+    def turn_right(self):
+        print("virando à direita\n")
+        self.driveMotors(0.05,-0.05)
+        if self.measures.irSensor[self.center_id] < 0.8:# and self.measures.irSensor[self.left_id] > 1.3:
+            self.turn_right_signal = 0
 
-        # if self.measures.irSensor[center_id] > 2.0:
-        #     if self.measures.irSensor[right_id] > 2.0:
-        #         self.driveMotors(-0.1, 0.1)
-        #     elif self.measures.irSensor[left_id] > 2.0:
-        #         self.driveMotors(0.1, -0.1)
-        # else:
-        #     self.driveMotors(0.1, 0.1)
+    def turn_left(self):
+        print("virando à esquerda\n")
+        self.driveMotors(-0.05,0.05)
+        if self.measures.irSensor[self.center_id] < 0.8: # and self.measures.irSensor[self.right_id] > 1.3:
+            self.turn_left_signal = 0
 
-        if self.measures.irSensor[center_id] > 2.0:
-            # print('Nao vas em frente burro')
-            if self.measures.irSensor[right_id] > self.measures.irSensor[left_id]:
-                self.driveMotors(-0.1, 0.1)
-            else:
-                self.driveMotors(0.1, -0.1)
-        elif self.measures.irSensor[right_id] > 2.7:
-            # print('Vira a esquerda')
-            self.driveMotors(-0.07, 0.07)
-        elif self.measures.irSensor[left_id] > 2.7:
-            # print('Vira a direita')
-            self.driveMotors(0.07, -0.07)
+    def turn_slight_left(self):
+        print("ajustando à esquerda\n")
+        self.driveMotors(-0.05,0.05)
+
+    def turn_slight_right(self):
+        print("ajustando à direita\n")
+        self.driveMotors(0.05,-0.05)
+
+    def emergency(self):
+        print("Emergencia\n")
+
+        if self.measures.irSensor[self.center_id] < 2.0:
+            self.emergency_signal = 0
+        elif self.measures.irSensor[self.left_id] < 1.5:
+            print("emeregencia à esquerda\n")
+            self.driveMotors(-0.05,0.05)
+        elif self.measures.irSensor[self.left_id] < 1.5:
+            print("emergencia à direita\n")
+            self.driveMotors(0.05,-0.05)
         else:
-            self.driveMotors(0.15, 0.15)
-        if self.measures.ground != -1:
-            if self.measures.ground != self.checkpoint and self.background_flag == True:
-                print("ENTRA")
-                if checkp[self.checkpoint+1] == self.measures.ground:
-                    self.checkpoint = self.measures.ground
-                    print("CHECKPOINT " + str(self.checkpoint) + "\n")
-                    self.background_flag = False
-                else:
-                    print("voltou para tras")
-            elif self.measures.ground == self.checkpoint and self.background_flag == True:
-                print("VOLTOU PARA TRÁS!!!!!\n\n\n\n\n")
-                self.checkpoint = self.measures.ground
-        else:
-            self.background_flag = True
+            self.driveMotors(0.05,-0.05)
+            print("Sem saída")
 
-        ######################################################
-        # Codigo do Prof
-        ######################################################
-        # if self.measures.irSensor[right_id] > 5.0:
-        #     print('right id')
-        # if    self.measures.irSensor[center_id] > 5.0\
-        #    or self.measures.irSensor[left_id]   > 5.0\
-        #    or self.measures.irSensor[right_id]  > 5.0\
-        #    or self.measures.irSensor[back_id]   > 5.0:
-        #     # print('Rotate left')
-        #     self.driveMotors(-0.1,+0.1)
-        # elif self.measures.irSensor[left_id]> 2.7:
-        #     # print('Rotate slowly right')
-        #     self.driveMotors(0.1,0.0)
-        # elif self.measures.irSensor[right_id]> 2.7:
-        #     # print('Rotate slowly left')
-        #     self.driveMotors(0.0,0.1)
-        # else:
-        #     # print('Go')
-        #     self.driveMotors(0.1,0.1)
+
+
 
 class Map():
     def __init__(self, filename):
         tree = ET.parse(filename)
         root = tree.getroot()
-
+        
         self.labMap = [[' '] * (CELLCOLS*2-1) for i in range(CELLROWS*2-1) ]
         i=1
         for child in root.iter('Row'):
@@ -155,7 +137,7 @@ class Map():
                            self.labMap[row][c//3*2]='-'
                        else:
                            None
-
+               
            i=i+1
 
 
@@ -182,5 +164,5 @@ if __name__ == '__main__':
     if mapc != None:
         rob.setMap(mapc.labMap)
         rob.printMap()
-
+    
     rob.run()
