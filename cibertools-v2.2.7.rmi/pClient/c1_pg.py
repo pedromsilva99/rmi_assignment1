@@ -72,25 +72,16 @@ class MyRob(CRobLinkAngs):
         back_id = 3
         checkp = [0,1,2,0]
 
-
-        # if self.measures.irSensor[center_id] > 2.0:
-        #     if self.measures.irSensor[right_id] > 2.0:
-        #         self.driveMotors(-0.1, 0.1)
-        #     elif self.measures.irSensor[left_id] > 2.0:
-        #         self.driveMotors(0.1, -0.1)
-        # else:
-        #     self.driveMotors(0.1, 0.1)
-
         if self.measures.irSensor[center_id] > 2.0:
             # print('Nao vas em frente burro')
             if self.measures.irSensor[right_id] > self.measures.irSensor[left_id]:
                 self.driveMotors(-0.1, 0.1)
             else:
                 self.driveMotors(0.1, -0.1)
-        elif self.measures.irSensor[right_id] > 2.7:
+        elif self.measures.irSensor[right_id] > 3.7:
             # print('Vira a esquerda')
             self.driveMotors(-0.07, 0.07)
-        elif self.measures.irSensor[left_id] > 2.7:
+        elif self.measures.irSensor[left_id] > 3.7:
             # print('Vira a direita')
             self.driveMotors(0.07, -0.07)
         else:
@@ -105,31 +96,10 @@ class MyRob(CRobLinkAngs):
                 else:
                     print("voltou para tras")
             elif self.measures.ground == self.checkpoint and self.background_flag == True:
-                print("VOLTOU PARA TRÁS!!!!!\n\n\n\n\n")
+                print("VOLTOU PARA TRÁS")
                 self.checkpoint = self.measures.ground
         else:
             self.background_flag = True
-
-        ######################################################
-        # Codigo do Prof
-        ######################################################
-        # if self.measures.irSensor[right_id] > 5.0:
-        #     print('right id')
-        # if    self.measures.irSensor[center_id] > 5.0\
-        #    or self.measures.irSensor[left_id]   > 5.0\
-        #    or self.measures.irSensor[right_id]  > 5.0\
-        #    or self.measures.irSensor[back_id]   > 5.0:
-        #     # print('Rotate left')
-        #     self.driveMotors(-0.1,+0.1)
-        # elif self.measures.irSensor[left_id]> 2.7:
-        #     # print('Rotate slowly right')
-        #     self.driveMotors(0.1,0.0)
-        # elif self.measures.irSensor[right_id]> 2.7:
-        #     # print('Rotate slowly left')
-        #     self.driveMotors(0.0,0.1)
-        # else:
-        #     # print('Go')
-        #     self.driveMotors(0.1,0.1)
 
 class Map():
     def __init__(self, filename):
