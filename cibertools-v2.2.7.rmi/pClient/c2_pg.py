@@ -96,18 +96,22 @@ class MyRob(CRobLinkAngs):
             self.last_pos = (self.offset_x, self.offset_y)
             print('Initial x: ' + str(self.offset_x))
             print('Initial y: ' + str(self.offset_y))
-            # print(self.measures.irSensor[center_id])
-            # print(self.measures.irSensor[right_id])
-            # print(self.measures.irSensor[left_id])
-            # print(self.measures.irSensor[back_id])
+            print(self.measures.irSensor[center_id])
+            print(self.measures.irSensor[right_id])
+            print(self.measures.irSensor[left_id])
+            print(self.measures.irSensor[back_id])
 
         if self.next_pos == (0, 0):
-            if self.measures.irSensor[left_id] < 2:
+            print(self.measures.irSensor[center_id])
+            print(self.measures.irSensor[right_id])
+            print(self.measures.irSensor[left_id])
+            print(self.measures.irSensor[back_id])
+            if self.measures.irSensor[left_id] < 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 elif self.measures.compass < 100 and self.measures.compass > 80:
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
-                elif self.measures.compass > 170 and self.measures.compass < -170:
+                elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
                 elif self.measures.compass > -90 and self.measures.compass < -80:
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
@@ -116,12 +120,12 @@ class MyRob(CRobLinkAngs):
                 self.go_left = True
                 self.go_right = False
                 self.go_back = False
-            elif self.measures.irSensor[center_id] < 2:
+            elif self.measures.irSensor[center_id] < 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 elif self.measures.compass < 100 and self.measures.compass > 80:
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
-                elif self.measures.compass > 170 and self.measures.compass < -170:
+                elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
                 elif self.measures.compass > -90 and self.measures.compass < -80:
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
@@ -130,15 +134,29 @@ class MyRob(CRobLinkAngs):
                 self.go_left = False
                 self.go_right = False
                 self.go_back = False
-            elif self.measures.irSensor[right_id] < 2:
-                self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+            elif self.measures.irSensor[right_id] < 1.2:
+                if self.measures.compass < 10 and self.measures.compass > -10:
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+                elif self.measures.compass < 100 and self.measures.compass > 80:
+                    self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
+                elif self.measures.compass > 170 or self.measures.compass < -170:
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
+                elif self.measures.compass > -90 and self.measures.compass < -80:
+                    self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
                 print('Next position: ' + str(self.next_pos))
                 self.go_front = False
                 self.go_left = False
                 self.go_right = True
                 self.go_back = False
             else:
-                self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
+                if self.measures.compass < 10 and self.measures.compass > -10:
+                    self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
+                elif self.measures.compass < 100 and self.measures.compass > 80:
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+                elif self.measures.compass > 170 or self.measures.compass < -170:
+                    self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
+                elif self.measures.compass > -90 and self.measures.compass < -80:
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 print('Next position: ' + str(self.next_pos))
                 self.go_front = False
                 self.go_left = False
@@ -148,16 +166,82 @@ class MyRob(CRobLinkAngs):
 
 
         if self.go_left:
-            if self.measures.compass < 100 and self.measures.compass > 80:
-                self.driveMotors(0.10, 0.10)
-            else:
-                self.driveMotors(-0.05, 0.05)
+            if self.next_pos[0] > self.last_pos[0]:
+                if self.measures.compass > -10 and self.measures.compass < 10:
+                    self.driveMotors(0.10, 0.10)
+                else:
+                    self.driveMotors(-0.05, 0.05)
+            elif self.next_pos[0] < self.last_pos[0]:
+                if self.measures.compass < -170 or self.measures.compass > 170:
+                    self.driveMotors(0.10, 0.10)
+                else:
+                    self.driveMotors(-0.05, 0.05)
+            elif self.next_pos[1] > self.last_pos[1]:
+                if self.measures.compass < 100 and self.measures.compass > 80:
+                    self.driveMotors(0.10, 0.10)
+                else:
+                    self.driveMotors(-0.05, 0.05)
+            elif self.next_pos[1] < self.last_pos[1]:
+                if self.measures.compass < -80 and self.measures.compass > -100:
+                    self.driveMotors(0.10, 0.10)
+                else:
+                    self.driveMotors(-0.05, 0.05)
             if self.stop_movement(self.next_pos):
                 print('Stopped on position: ' + str(self.next_pos))
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
         if self.go_front:
             self.driveMotors(0.10, 0.10)
+            if self.stop_movement(self.next_pos):
+                print('Stopped on position: ' + str(self.next_pos))
+                self.last_pos = self.next_pos
+                self.next_pos = (0, 0)
+        if self.go_right:
+            if self.next_pos[0] > self.last_pos[0]:
+                if self.measures.compass > -10 and self.measures.compass < 10:
+                    self.driveMotors(0.10, 0.10)
+                else:
+                    self.driveMotors(0.05, -0.05)
+            elif self.next_pos[0] < self.last_pos[0]:
+                if self.measures.compass < -170 or self.measures.compass > 170:
+                    self.driveMotors(0.10, 0.10)
+                else:
+                    self.driveMotors(0.05, -0.05)
+            elif self.next_pos[1] > self.last_pos[1]:
+                if self.measures.compass < 100 and self.measures.compass > 80:
+                    self.driveMotors(0.10, 0.10)
+                else:
+                    self.driveMotors(0.05, -0.05)
+            elif self.next_pos[1] < self.last_pos[1]:
+                if self.measures.compass < -80 and self.measures.compass > -100:
+                    self.driveMotors(0.10, 0.10)
+                else:
+                    self.driveMotors(0.05, -0.05)
+            if self.stop_movement(self.next_pos):
+                print('Stopped on position: ' + str(self.next_pos))
+                self.last_pos = self.next_pos
+                self.next_pos = (0, 0)
+        if self.go_back:
+            if self.next_pos[0] > self.last_pos[0]:
+                if self.measures.compass > -10 and self.measures.compass < 10:
+                    self.driveMotors(0.10, 0.10)
+                else:
+                    self.driveMotors(-0.05, 0.05)
+            elif self.next_pos[0] < self.last_pos[0]:
+                if self.measures.compass < -170 or self.measures.compass > 170:
+                    self.driveMotors(0.10, 0.10)
+                else:
+                    self.driveMotors(-0.05, 0.05)
+            elif self.next_pos[1] > self.last_pos[1]:
+                if self.measures.compass < 100 and self.measures.compass > 80:
+                    self.driveMotors(0.10, 0.10)
+                else:
+                    self.driveMotors(-0.05, 0.05)
+            elif self.next_pos[1] < self.last_pos[1]:
+                if self.measures.compass < -80 and self.measures.compass > -100:
+                    self.driveMotors(0.10, 0.10)
+                else:
+                    self.driveMotors(-0.05, 0.05)
             if self.stop_movement(self.next_pos):
                 print('Stopped on position: ' + str(self.next_pos))
                 self.last_pos = self.next_pos
