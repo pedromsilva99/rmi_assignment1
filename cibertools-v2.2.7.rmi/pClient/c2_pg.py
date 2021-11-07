@@ -28,6 +28,18 @@ class MyRob(CRobLinkAngs):
         state = 'stop'
         stopped_state = 'run'
 
+        # Our variables
+        self.init_val = 0
+        self.offset_x = 0
+        self.offset_y = 0
+        self.last_pos = (0, 0)
+        self.next_pos = (0, 0)
+
+        self.go_left = False
+        self.go_right = False
+        self.go_back = False
+        self.go_front = False
+
         while True:
             self.readSensors()
 
@@ -63,6 +75,13 @@ class MyRob(CRobLinkAngs):
                 self.wander()
 
 
+    def stop_movement(self, next_pos):
+        if self.next_pos[0] >= self.measures.x - 0.2 and self.next_pos[0] <= self.measures.x + 0.2 \
+        and self.next_pos[1] >= self.measures.y - 0.2 and self.next_pos[1] <= self.measures.y + 0.2:
+            return True
+        else:
+            return False
+
     def wander(self):
         center_id = 0
         left_id = 1
@@ -70,25 +89,94 @@ class MyRob(CRobLinkAngs):
         back_id = 3
 
 
-        if self.measures.irSensor[center_id] > 2.0:
-            # print('Nao vas em frente burro')
-            if self.measures.irSensor[right_id] > 1.7:
-                self.driveMotors(-0.1, 0.1)
-            elif self.measures.irSensor[left_id] > 1.7:
-                self.driveMotors(0.1, -0.1)
-        elif self.measures.irSensor[right_id] > 2.7:
-            # print('Vira a esquerda')
-            self.driveMotors(0.0, 0.1)
-        elif self.measures.irSensor[left_id] > 2.7:
-            # print('Vira a direita')
-            self.driveMotors(0.1, 0.0)
-        else:
+        if self.init_val == 0:
+            self.init_val = 1
+            self.offset_x = self.measures.x
+            self.offset_y = self.measures.y
+            self.last_pos = (self.offset_x, self.offset_y)
+            print('Initial x: ' + str(self.offset_x))
+            print('Initial y: ' + str(self.offset_y))
+            # print(self.measures.irSensor[center_id])
+            # print(self.measures.irSensor[right_id])
+            # print(self.measures.irSensor[left_id])
+            # print(self.measures.irSensor[back_id])
+
+        if self.next_pos == (0, 0):
+            if self.measures.irSensor[left_id] < 2:
+                if self.measures.compass < 10 and self.measures.compass > -10:
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
+                elif self.measures.compass < 100 and self.measures.compass > 80:
+                    self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
+                elif self.measures.compass > 170 and self.measures.compass < -170:
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+                elif self.measures.compass > -90 and self.measures.compass < -80:
+                    self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
+                print('Next position: ' + str(self.next_pos))
+                self.go_front = False
+                self.go_left = True
+                self.go_right = False
+                self.go_back = False
+            elif self.measures.irSensor[center_id] < 2:
+                if self.measures.compass < 10 and self.measures.compass > -10:
+                    self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
+                elif self.measures.compass < 100 and self.measures.compass > 80:
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
+                elif self.measures.compass > 170 and self.measures.compass < -170:
+                    self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
+                elif self.measures.compass > -90 and self.measures.compass < -80:
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+                print('Next position: ' + str(self.next_pos))
+                self.go_front = True
+                self.go_left = False
+                self.go_right = False
+                self.go_back = False
+            elif self.measures.irSensor[right_id] < 2:
+                self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+                print('Next position: ' + str(self.next_pos))
+                self.go_front = False
+                self.go_left = False
+                self.go_right = True
+                self.go_back = False
+            else:
+                self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
+                print('Next position: ' + str(self.next_pos))
+                self.go_front = False
+                self.go_left = False
+                self.go_right = False
+                self.go_back = True
+
+
+
+        if self.go_left:
+            if self.measures.compass < 100 and self.measures.compass > 80:
+                self.driveMotors(0.10, 0.10)
+            else:
+                self.driveMotors(-0.05, 0.05)
+            if self.stop_movement(self.next_pos):
+                print('Stopped on position: ' + str(self.next_pos))
+                self.last_pos = self.next_pos
+                self.next_pos = (0, 0)
+        if self.go_front:
             self.driveMotors(0.10, 0.10)
+            if self.stop_movement(self.next_pos):
+                print('Stopped on position: ' + str(self.next_pos))
+                self.last_pos = self.next_pos
+                self.next_pos = (0, 0)
 
 
-        print('x: ' + str(self.measures.x))
-        print('y: ' + str(self.measures.y))
-        print('compass: ' + str(self.measures.compass))
+        # if (self.measures.x < (self.offset_x + 2)):
+        #     self.driveMotors(0.10, 0.10)
+        # else:
+        #     print(self.measures.compass)
+        #     if self.measures.compass < 100 and self.measures.compass > 80:
+        #         self.driveMotors(0.10, 0.10)
+        #     else:
+        #         self.driveMotors(-0.05, 0.05)
+
+
+        # print('x: ' + str(self.measures.x))
+        # print('y: ' + str(self.measures.y))
+        # print('compass: ' + str(self.measures.compass))
 
 class Map():
     def __init__(self, filename):
@@ -137,7 +225,7 @@ for i in range(1, len(sys.argv),2):
         quit()
 
 if __name__ == '__main__':
-    rob=MyRob(rob_name,pos,[0.0,60.0,-60.0,180.0],host)
+    rob=MyRob(rob_name,pos,[0.0,90.0,-90.0,180.0],host)
     if mapc != None:
         rob.setMap(mapc.labMap)
         rob.printMap()
