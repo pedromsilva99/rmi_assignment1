@@ -30,6 +30,7 @@ class MyRob(CRobLinkAngs):
         self.turn_left_signal = 0
         self.turn_right_signal = 0
         self.emergency_signal = 0
+        self.walk = 0
 
         while True:
             self.readSensors()
@@ -74,6 +75,33 @@ class MyRob(CRobLinkAngs):
         print("x: " + str(self.measures.x))
         print("y: " + str(self.measures.y))
         print("bussola: " + str(self.measures.compass))
+
+        if self.walk == 4:
+            print("PRONTO PARA SEGUIR")
+            self.walk = 0
+            exit()
+        elif (self.measures.compass<75 or self.measures.compass>105):
+            self.driveMotors(-0.10, 0.10)
+        elif (self.measures.compass>80 and self.measures.compass<88):
+            self.driveMotors(-0.05, 0.05)
+        elif (self.measures.compass>92 and self.measures.compass<100):
+            self.driveMotors(0.05, -0.05)
+        elif (self.measures.compass>84 and self.measures.compass<89):
+            self.driveMotors(-0.005,0.005)
+        elif (self.measures.compass<96 and self.measures.compass>91):
+            self.driveMotors(0.005,-0.005)
+        elif(self.measures.compass<=91 and self.measures.compass>=89):
+            if(self.measures.compass==91):
+                self.driveMotors(0.004,-0.004)
+            elif(self.measures.compass==89):
+                self.driveMotors(-0.004,0.004)
+            else:
+                self.walk += 1
+                self.driveMotors(0,0)
+        else:
+            print("SHIT")
+        
+
 
     def turn_right(self):
         print("virando à direita\n")
