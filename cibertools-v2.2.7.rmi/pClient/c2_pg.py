@@ -34,6 +34,8 @@ class MyRob(CRobLinkAngs):
         self.offset_y = 0
         self.last_pos = (0, 0)
         self.next_pos = (0, 0)
+        self.walk = 0
+        self.first_call = 1
 
         self.go_left = False
         self.go_right = False
@@ -76,8 +78,8 @@ class MyRob(CRobLinkAngs):
 
 
     def stop_movement(self, next_pos):
-        if self.next_pos[0] >= self.measures.x - 0.3 and self.next_pos[0] <= self.measures.x + 0.3 \
-        and self.next_pos[1] >= self.measures.y - 0.3 and self.next_pos[1] <= self.measures.y + 0.3:
+        if self.next_pos[0] >= self.measures.x - 0.25 and self.next_pos[0] <= self.measures.x + 0.25 \
+        and self.next_pos[1] >= self.measures.y - 0.25 and self.next_pos[1] <= self.measures.y + 0.25:
             return True
         else:
             return False
@@ -88,24 +90,24 @@ class MyRob(CRobLinkAngs):
         right_id = 2
         back_id = 3
 
-
+        print(self.measures.compass)
         if self.init_val == 0:
             self.init_val = 1
             self.offset_x = self.measures.x
             self.offset_y = self.measures.y
             self.last_pos = (self.offset_x, self.offset_y)
-            print('Initial x: ' + str(self.offset_x))
-            print('Initial y: ' + str(self.offset_y))
-            print(self.measures.irSensor[center_id])
-            print(self.measures.irSensor[right_id])
-            print(self.measures.irSensor[left_id])
-            print(self.measures.irSensor[back_id])
+            # print('Initial x: ' + str(self.offset_x))
+            # print('Initial y: ' + str(self.offset_y))
+            # print(self.measures.irSensor[center_id])
+            # print(self.measures.irSensor[right_id])
+            # print(self.measures.irSensor[left_id])
+            # print(self.measures.irSensor[back_id])
 
         if self.next_pos == (0, 0):
-            print(self.measures.irSensor[center_id])
-            print(self.measures.irSensor[right_id])
-            print(self.measures.irSensor[left_id])
-            print(self.measures.irSensor[back_id])
+            # print(self.measures.irSensor[center_id])
+            # print(self.measures.irSensor[right_id])
+            # print(self.measures.irSensor[left_id])
+            # print(self.measures.irSensor[back_id])
             print(self.measures.compass)
             if self.measures.irSensor[left_id] < 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
@@ -168,83 +170,106 @@ class MyRob(CRobLinkAngs):
 
         if self.go_left:
             if self.next_pos[0] > self.last_pos[0]:
-                if self.measures.compass > -10 and self.measures.compass < 10:
-                    self.driveMotors(0.12, 0.12)
-                else:
-                    self.driveMotors(-0.05, 0.05)
+                if self.first_call:
+                    if self.turn(0, 'left') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
-                if self.measures.compass < -170 or self.measures.compass > 170:
-                    self.driveMotors(0.12, 0.12)
-                else:
-                    self.driveMotors(-0.05, 0.05)
+                if self.first_call:
+                    if self.turn(-180, 'left') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
-                if self.measures.compass < 100 and self.measures.compass > 80:
-                    self.driveMotors(0.12, 0.12)
-                else:
-                    self.driveMotors(-0.05, 0.05)
+                if self.first_call:
+                    if self.turn(90, 'left') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
-                if self.measures.compass < -80 and self.measures.compass > -100:
-                    self.driveMotors(0.12, 0.12)
-                else:
-                    self.driveMotors(-0.05, 0.05)
+                if self.first_call:
+                    if self.turn(-90, 'left') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             if self.stop_movement(self.next_pos):
                 print('Stopped on position: ' + str(self.next_pos))
+                self.first_call = 1
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
         if self.go_front:
-            self.driveMotors(0.12, 0.12)
+            if self.next_pos[0] > self.last_pos[0]:
+                if self.first_call:
+                    if self.turn(0, 'left') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
+            elif self.next_pos[0] < self.last_pos[0]:
+                if self.first_call:
+                    if self.turn(-180, 'left') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
+            elif self.next_pos[1] > self.last_pos[1]:
+                if self.first_call:
+                    if self.turn(90, 'left') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
+            elif self.next_pos[1] < self.last_pos[1]:
+                if self.first_call:
+                    if self.turn(-90, 'left') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             if self.stop_movement(self.next_pos):
                 print('Stopped on position: ' + str(self.next_pos))
+                self.first_call = 1
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
         if self.go_right:
             if self.next_pos[0] > self.last_pos[0]:
-                if self.measures.compass > -10 and self.measures.compass < 10:
-                    self.driveMotors(0.12, 0.12)
-                else:
-                    self.driveMotors(0.05, -0.05)
+                if self.first_call:
+                    if self.turn(0, 'right') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
-                if self.measures.compass < -170 or self.measures.compass > 170:
-                    self.driveMotors(0.12, 0.12)
-                else:
-                    self.driveMotors(0.05, -0.05)
+                if self.first_call:
+                    if self.turn(-180, 'right') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
-                if self.measures.compass < 100 and self.measures.compass > 80:
-                    self.driveMotors(0.12, 0.12)
-                else:
-                    self.driveMotors(0.05, -0.05)
+                if self.first_call:
+                    if self.turn(90, 'right') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
-                if self.measures.compass < -80 and self.measures.compass > -100:
-                    self.driveMotors(0.12, 0.12)
-                else:
-                    self.driveMotors(0.05, -0.05)
+                if self.first_call:
+                    if self.turn(-90, 'right') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             if self.stop_movement(self.next_pos):
                 print('Stopped on position: ' + str(self.next_pos))
+                self.first_call = 1
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
         if self.go_back:
             if self.next_pos[0] > self.last_pos[0]:
-                if self.measures.compass > -10 and self.measures.compass < 10:
-                    self.driveMotors(0.12, 0.12)
-                else:
-                    self.driveMotors(-0.05, 0.05)
+                if self.first_call:
+                    if self.turn(0, 'left') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
-                if self.measures.compass < -170 or self.measures.compass > 170:
-                    self.driveMotors(0.12, 0.12)
-                else:
-                    self.driveMotors(-0.05, 0.05)
+                if self.first_call:
+                    if self.turn(-180, 'left') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
-                if self.measures.compass < 100 and self.measures.compass > 80:
-                    self.driveMotors(0.12, 0.12)
-                else:
-                    self.driveMotors(-0.05, 0.05)
+                if self.first_call:
+                    if self.turn(90, 'left') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
-                if self.measures.compass < -80 and self.measures.compass > -100:
-                    self.driveMotors(0.12, 0.12)
-                else:
-                    self.driveMotors(-0.05, 0.05)
+                if self.first_call:
+                    if self.turn(-90, 'left') == 1:
+                        self.driveMotors(0.12, 0.12)
+                        self.first_call = 0
             if self.stop_movement(self.next_pos):
                 print('Stopped on position: ' + str(self.next_pos))
+                self.first_call = 1
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
 
@@ -262,6 +287,61 @@ class MyRob(CRobLinkAngs):
         # print('x: ' + str(self.measures.x))
         # print('y: ' + str(self.measures.y))
         # print('compass: ' + str(self.measures.compass))
+
+    def turn(self, degrees, direction):
+        if(degrees == -180 or degrees == 180):
+            if self.walk == 4:
+                print("PRONTO PARA SEGUIR")
+                self.walk = 0
+                return 1
+                #return True
+            elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15) and direction == 'left'):
+                self.driveMotors(-0.10, 0.10)
+            elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15) and direction == 'right'):
+                self.driveMotors(0.10, -0.10)
+            elif (self.measures.compass>(180-10) and self.measures.compass<(180-2)):
+                self.driveMotors(-0.05, 0.05)
+            elif (self.measures.compass>(-180+2) and self.measures.compass<(-180+10)):
+                self.driveMotors(0.05, -0.05)
+            elif (self.measures.compass>(180-6) and self.measures.compass<(180-1)):
+                self.driveMotors(-0.005,0.005)
+            elif (self.measures.compass<(-180+6) and self.measures.compass>(-180+1)):
+                self.driveMotors(0.005,-0.005)
+            elif(self.measures.compass<=(-180+1) and self.measures.compass>=(-180)) or (self.measures.compass>=(180-1) and self.measures.compass<=(180)):
+                if(self.measures.compass==(-180+1)):
+                    self.driveMotors(0.004,-0.004)
+                elif(self.measures.compass==(180-1)):
+                    self.driveMotors(-0.004,0.004)
+                else:
+                    self.walk += 1
+                    self.driveMotors(0,0)
+        elif self.walk == 4:
+            print("PRONTO PARA SEGUIR")
+            self.walk = 0
+            return 1
+            #return True
+        elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15) and direction == 'left'):
+            self.driveMotors(-0.10, 0.10)
+        elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15) and direction == 'right'):
+            self.driveMotors(0.10, -0.10)
+        elif (self.measures.compass>(degrees-10) and self.measures.compass<(degrees-2)):
+            self.driveMotors(-0.05, 0.05)
+        elif (self.measures.compass>(degrees+2) and self.measures.compass<(degrees+10)):
+            self.driveMotors(0.05, -0.05)
+        elif (self.measures.compass>(degrees-6) and self.measures.compass<(degrees-1)):
+            self.driveMotors(-0.005,0.005)
+        elif (self.measures.compass<(degrees+6) and self.measures.compass>(degrees+1)):
+            self.driveMotors(0.005,-0.005)
+        elif(self.measures.compass<=(degrees+1) and self.measures.compass>=(degrees-1)):
+            if(self.measures.compass==(degrees+1)):
+                self.driveMotors(0.004,-0.004)
+            elif(self.measures.compass==(degrees-1)):
+                self.driveMotors(-0.004,0.004)
+            else:
+                self.walk += 1
+                self.driveMotors(0,0)
+        else:
+            pass
 
 class Map():
     def __init__(self, filename):
