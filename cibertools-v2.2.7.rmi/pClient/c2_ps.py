@@ -75,31 +75,59 @@ class MyRob(CRobLinkAngs):
         print("x: " + str(self.measures.x))
         print("y: " + str(self.measures.y))
         print("bussola: " + str(self.measures.compass))
+        #self.driveMotors(-0.005,0.005)
+        self.turn(180)
 
-        if self.walk == 4:
+    def turn(self, degrees):
+        if(degrees == -180 or degrees == 180):
+            if self.walk == 4:
+                print("PRONTO PARA SEGUIR")
+                self.walk = 0
+                exit()
+                #return True   
+            elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15)):
+                self.driveMotors(-0.10, 0.10)
+            elif (self.measures.compass>(180-10) and self.measures.compass<(180-2)):
+                self.driveMotors(-0.05, 0.05)
+            elif (self.measures.compass>(-180+2) and self.measures.compass<(-180+10)):
+                self.driveMotors(0.05, -0.05)
+            elif (self.measures.compass>(180-6) and self.measures.compass<(180-1)):
+                self.driveMotors(-0.005,0.005)
+            elif (self.measures.compass<(-180+6) and self.measures.compass>(-180+1)):
+                self.driveMotors(0.005,-0.005)
+            elif(self.measures.compass<=(-180+1) and self.measures.compass>=(-180)) or (self.measures.compass>=(180-1) and self.measures.compass<=(180)):
+                if(self.measures.compass==(-180+1)):
+                    self.driveMotors(0.004,-0.004)
+                elif(self.measures.compass==(180-1)):
+                    self.driveMotors(-0.004,0.004)
+                else:
+                    self.walk += 1
+                    self.driveMotors(0,0)
+        elif self.walk == 4:
             print("PRONTO PARA SEGUIR")
             self.walk = 0
             exit()
-        elif (self.measures.compass<75 or self.measures.compass>105):
+            #return True
+        elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15)):
             self.driveMotors(-0.10, 0.10)
-        elif (self.measures.compass>80 and self.measures.compass<88):
+        elif (self.measures.compass>(degrees-10) and self.measures.compass<(degrees-2)):
             self.driveMotors(-0.05, 0.05)
-        elif (self.measures.compass>92 and self.measures.compass<100):
+        elif (self.measures.compass>(degrees+2) and self.measures.compass<(degrees+10)):
             self.driveMotors(0.05, -0.05)
-        elif (self.measures.compass>84 and self.measures.compass<89):
+        elif (self.measures.compass>(degrees-6) and self.measures.compass<(degrees-1)):
             self.driveMotors(-0.005,0.005)
-        elif (self.measures.compass<96 and self.measures.compass>91):
+        elif (self.measures.compass<(degrees+6) and self.measures.compass>(degrees+1)):
             self.driveMotors(0.005,-0.005)
-        elif(self.measures.compass<=91 and self.measures.compass>=89):
-            if(self.measures.compass==91):
+        elif(self.measures.compass<=(degrees+1) and self.measures.compass>=(degrees-1)):
+            if(self.measures.compass==(degrees+1)):
                 self.driveMotors(0.004,-0.004)
-            elif(self.measures.compass==89):
+            elif(self.measures.compass==(degrees-1)):
                 self.driveMotors(-0.004,0.004)
             else:
                 self.walk += 1
                 self.driveMotors(0,0)
         else:
-            print("SHIT")
+            pass
         
 
 
