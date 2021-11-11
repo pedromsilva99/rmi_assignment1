@@ -76,17 +76,19 @@ class MyRob(CRobLinkAngs):
         print("y: " + str(self.measures.y))
         print("bussola: " + str(self.measures.compass))
         #self.driveMotors(-0.005,0.005)
-        self.turn(180)
+        self.turn(180,'left')
 
-    def turn(self, degrees):
+    def turn(self, degrees, direction):
         if(degrees == -180 or degrees == 180):
             if self.walk == 4:
                 print("PRONTO PARA SEGUIR")
                 self.walk = 0
                 exit()
                 #return True   
-            elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15)):
+            elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15) and direction == 'left'):
                 self.driveMotors(-0.10, 0.10)
+            elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15) and direction == 'right'):
+                self.driveMotors(0.10, -0.10)
             elif (self.measures.compass>(180-10) and self.measures.compass<(180-2)):
                 self.driveMotors(-0.05, 0.05)
             elif (self.measures.compass>(-180+2) and self.measures.compass<(-180+10)):
@@ -108,8 +110,10 @@ class MyRob(CRobLinkAngs):
             self.walk = 0
             exit()
             #return True
-        elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15)):
+        elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15) and direction == 'left'):
             self.driveMotors(-0.10, 0.10)
+        elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15) and direction == 'right'):
+            self.driveMotors(0.10, -0.10)
         elif (self.measures.compass>(degrees-10) and self.measures.compass<(degrees-2)):
             self.driveMotors(-0.05, 0.05)
         elif (self.measures.compass>(degrees+2) and self.measures.compass<(degrees+10)):
