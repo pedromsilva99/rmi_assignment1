@@ -90,7 +90,7 @@ class MyRob(CRobLinkAngs):
         right_id = 2
         back_id = 3
 
-        print(self.measures.compass)
+        # print(self.measures.compass)
         if self.init_val == 0:
             self.init_val = 1
             self.offset_x = self.measures.x
@@ -116,7 +116,7 @@ class MyRob(CRobLinkAngs):
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
-                elif self.measures.compass > -90 and self.measures.compass < -80:
+                elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 print('Next position: ' + str(self.next_pos))
                 self.go_front = False
@@ -130,7 +130,7 @@ class MyRob(CRobLinkAngs):
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
-                elif self.measures.compass > -90 and self.measures.compass < -80:
+                elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
                 print('Next position: ' + str(self.next_pos))
                 self.go_front = True
@@ -144,7 +144,7 @@ class MyRob(CRobLinkAngs):
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
-                elif self.measures.compass > -90 and self.measures.compass < -80:
+                elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
                 print('Next position: ' + str(self.next_pos))
                 self.go_front = False
@@ -158,7 +158,7 @@ class MyRob(CRobLinkAngs):
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
-                elif self.measures.compass > -90 and self.measures.compass < -80:
+                elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 print('Next position: ' + str(self.next_pos))
                 self.go_front = False
@@ -291,7 +291,7 @@ class MyRob(CRobLinkAngs):
     def turn(self, degrees, direction):
         if(degrees == -180 or degrees == 180):
             if self.walk == 4:
-                print("PRONTO PARA SEGUIR")
+                # print("PRONTO PARA SEGUIR")
                 self.walk = 0
                 return 1
                 #return True
@@ -316,7 +316,7 @@ class MyRob(CRobLinkAngs):
                     self.walk += 1
                     self.driveMotors(0,0)
         elif self.walk == 4:
-            print("PRONTO PARA SEGUIR")
+            # print("PRONTO PARA SEGUIR")
             self.walk = 0
             return 1
             #return True
