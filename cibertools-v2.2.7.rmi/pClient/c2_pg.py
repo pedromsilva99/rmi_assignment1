@@ -38,6 +38,16 @@ class MyRob(CRobLinkAngs):
         self.first_call = 1
         self.count_intersection = 0
         self.intersections_ls = []
+        # w, h = 55, 27
+        # self.matrix = [[' ' for x in range(w)] for y in range(h)]
+        # for i in self.matrix:
+        #     print(i)
+        w, h = 55, 27
+        self.matrix = [[' ' for x in range(w)] for y in range(h)]
+        print(len(self.matrix[0]))
+
+
+
 
         self.go_left = False
         self.go_right = False
@@ -98,6 +108,24 @@ class MyRob(CRobLinkAngs):
             self.offset_x = self.measures.x
             self.offset_y = self.measures.y
             self.last_pos = (self.offset_x, self.offset_y)
+            self.matrix[13][27] = 'O'
+
+            if self.measures.irSensor[center_id] < 1.2:
+                self.matrix[13][28] = 'X'
+            else:
+                self.matrix[13][28] = '|'
+            if self.measures.irSensor[right_id] < 1.2:
+                self.matrix[27 - 13][27] = 'X'
+            else:
+                self.matrix[27 - 13][27] = '-'
+            if self.measures.irSensor[left_id] < 1.2:
+                self.matrix[25 - 13][27] = 'X'
+            else:
+                self.matrix[25 - 13][27] = '-'
+            if self.measures.irSensor[back_id] < 1.2:
+                self.matrix[13][26] = 'X'
+            else:
+                self.matrix[13][26] = '|'
             # print('Initial x: ' + str(self.offset_x))
             # print('Initial y: ' + str(self.offset_y))
             # print(self.measures.irSensor[center_id])
@@ -119,14 +147,110 @@ class MyRob(CRobLinkAngs):
             if self.measures.irSensor[back_id] < 1.2:
                 self.count_intersection += 1
             print(self.measures.compass)
-            if self.measures.irSensor[left_id] < 1.2:
+
+            # Mark the walls
+            if self.measures.irSensor[left_id] > 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[25 - self.pos[1]][self.pos[0]] = '-'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 elif self.measures.compass < 100 and self.measures.compass > 80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] - 1] = '|'
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
                 elif self.measures.compass > 170 or self.measures.compass < -170:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[27 - self.pos[1]][self.pos[0]] = '-'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
                 elif self.measures.compass > -100 and self.measures.compass < -80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] + 1] = '|'
+                    self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
+            if self.measures.irSensor[right_id] > 1.2:
+                if self.measures.compass < 10 and self.measures.compass > -10:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[27 - self.pos[1]][self.pos[0]] = '-'
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+                elif self.measures.compass < 100 and self.measures.compass > 80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] + 1] = '|'
+                    self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
+                elif self.measures.compass > 170 or self.measures.compass < -170:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[25 - self.pos[1]][self.pos[0]] = '-'
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
+                elif self.measures.compass > -100 and self.measures.compass < -80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] - 1] = '|'
+                    self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
+            if self.measures.irSensor[center_id] > 1.2:
+                if self.measures.compass < 10 and self.measures.compass > -10:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] + 1] = '|'
+                    self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
+                elif self.measures.compass < 100 and self.measures.compass > 80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[25 - self.pos[1]][self.pos[0]] = '-'
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
+                elif self.measures.compass > 170 or self.measures.compass < -170:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] - 1] = '|'
+                    self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
+                elif self.measures.compass > -100 and self.measures.compass < -80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[27 - self.pos[1]][self.pos[0]] = '-'
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+            if self.measures.irSensor[center_id] < 1.2:
+                if self.measures.compass < 10 and self.measures.compass > -10:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
+                    self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
+                elif self.measures.compass < 100 and self.measures.compass > 80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
+                elif self.measures.compass > 170 or self.measures.compass < -170:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
+                    self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
+                elif self.measures.compass > -100 and self.measures.compass < -80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+            if self.measures.irSensor[right_id] < 1.2:
+                if self.measures.compass < 10 and self.measures.compass > -10:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+                elif self.measures.compass < 100 and self.measures.compass > 80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
+                    self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
+                elif self.measures.compass > 170 or self.measures.compass < -170:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
+                elif self.measures.compass > -100 and self.measures.compass < -80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
+                    self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
+
+            if self.measures.irSensor[left_id] < 1.2:
+                if self.measures.compass < 10 and self.measures.compass > -10:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
+                elif self.measures.compass < 100 and self.measures.compass > 80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
+                    self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
+                elif self.measures.compass > 170 or self.measures.compass < -170:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+                elif self.measures.compass > -100 and self.measures.compass < -80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 print('Next position: ' + str(self.next_pos))
                 self.go_front = False
@@ -135,12 +259,20 @@ class MyRob(CRobLinkAngs):
                 self.go_back = False
             elif self.measures.irSensor[center_id] < 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 elif self.measures.compass < 100 and self.measures.compass > 80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 elif self.measures.compass > 170 or self.measures.compass < -170:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
                 elif self.measures.compass > -100 and self.measures.compass < -80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
                 print('Next position: ' + str(self.next_pos))
                 self.go_front = True
@@ -149,12 +281,20 @@ class MyRob(CRobLinkAngs):
                 self.go_back = False
             elif self.measures.irSensor[right_id] < 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
                 elif self.measures.compass < 100 and self.measures.compass > 80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 elif self.measures.compass > 170 or self.measures.compass < -170:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 elif self.measures.compass > -100 and self.measures.compass < -80:
+                    self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
+                    self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
                 print('Next position: ' + str(self.next_pos))
                 self.go_front = False
@@ -204,10 +344,23 @@ class MyRob(CRobLinkAngs):
                         self.driveMotors(0.12, 0.12)
                         self.first_call = 0
             if self.stop_movement(self.next_pos):
-                print('Stopped on position: ' + str(self.next_pos))
+
+                self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
+
+                # print('Stopped on position: ' + str(self.pos))
+                #
+                # print(self.pos[0])
+                # print(self.pos[1])
+                self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
+
+                for i in self.matrix:
+                    print(''.join(i))
+
                 self.first_call = 1
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
+
+
         if self.go_front:
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
@@ -230,7 +383,16 @@ class MyRob(CRobLinkAngs):
                         self.driveMotors(0.12, 0.12)
                         self.first_call = 0
             if self.stop_movement(self.next_pos):
-                print('Stopped on position: ' + str(self.next_pos))
+                self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
+
+                # print('Stopped on position: ' + str(self.pos))
+                #
+                # print(self.pos[0])
+                # print(self.pos[1])
+                self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
+
+                for i in self.matrix:
+                    print(''.join(i))
                 self.first_call = 1
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
@@ -256,7 +418,16 @@ class MyRob(CRobLinkAngs):
                         self.driveMotors(0.12, 0.12)
                         self.first_call = 0
             if self.stop_movement(self.next_pos):
-                print('Stopped on position: ' + str(self.next_pos))
+                self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
+
+                # print('Stopped on position: ' + str(self.pos))
+                #
+                # print(self.pos[0])
+                # print(self.pos[1])
+                self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
+
+                for i in self.matrix:
+                    print(''.join(i))
                 self.first_call = 1
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
@@ -282,7 +453,16 @@ class MyRob(CRobLinkAngs):
                         self.driveMotors(0.12, 0.12)
                         self.first_call = 0
             if self.stop_movement(self.next_pos):
-                print('Stopped on position: ' + str(self.next_pos))
+                self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
+
+                # print('Stopped on position: ' + str(self.pos))
+                #
+                # print(self.pos[0])
+                # print(self.pos[1])
+                self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
+
+                for i in self.matrix:
+                    print(''.join(i))
                 self.first_call = 1
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
@@ -309,9 +489,9 @@ class MyRob(CRobLinkAngs):
                 self.walk = 0
                 return 1
                 #return True
-            elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15) and direction == 'left'):
+            elif ((self.measures.compass<(180-15) and self.measures.compass>(-180+15)) and direction == 'left'):
                 self.driveMotors(-0.10, 0.10)
-            elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15) and direction == 'right'):
+            elif ((self.measures.compass<(180-15) and self.measures.compass>(-180+15)) and direction == 'right'):
                 self.driveMotors(0.10, -0.10)
             elif (self.measures.compass>(180-10) and self.measures.compass<(180-2)):
                 self.driveMotors(-0.05, 0.05)
@@ -334,9 +514,11 @@ class MyRob(CRobLinkAngs):
             self.walk = 0
             return 1
             #return True
-        elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15) and direction == 'left'):
+        elif ((self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15)) and direction == 'left'):
+            print('GO TO THE LEFT')
             self.driveMotors(-0.10, 0.10)
-        elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15) and direction == 'right'):
+        elif ((self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15)) and direction == 'right'):
+            print('GO TO THE RIGHT')
             self.driveMotors(0.10, -0.10)
         elif (self.measures.compass>(degrees-10) and self.measures.compass<(degrees-2)):
             self.driveMotors(-0.05, 0.05)
