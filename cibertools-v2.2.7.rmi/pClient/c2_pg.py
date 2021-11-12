@@ -36,6 +36,8 @@ class MyRob(CRobLinkAngs):
         self.next_pos = (0, 0)
         self.walk = 0
         self.first_call = 1
+        self.count_intersection = 0
+        self.intersections_ls = []
 
         self.go_left = False
         self.go_right = False
@@ -108,6 +110,14 @@ class MyRob(CRobLinkAngs):
             # print(self.measures.irSensor[right_id])
             # print(self.measures.irSensor[left_id])
             # print(self.measures.irSensor[back_id])
+            if self.measures.irSensor[left_id] < 1.2:
+                self.count_intersection += 1
+            if self.measures.irSensor[center_id] < 1.2:
+                self.count_intersection += 1
+            if self.measures.irSensor[right_id] < 1.2:
+                self.count_intersection += 1
+            if self.measures.irSensor[back_id] < 1.2:
+                self.count_intersection += 1
             print(self.measures.compass)
             if self.measures.irSensor[left_id] < 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
@@ -165,9 +175,13 @@ class MyRob(CRobLinkAngs):
                 self.go_left = False
                 self.go_right = False
                 self.go_back = True
+            if self.count_intersection >= 3:
+                if (self.last_pos[0], self.last_pos[1]) not in self.intersections_ls:
+                    self.intersections_ls.append((self.last_pos[0], self.last_pos[1]))
+                # print("Intersection on: " + str(self.last_pos[0]) + ', ' + str(self.last_pos[1]))
+                print('Intersections: ' + str(self.intersections_ls))
 
-
-
+        self.count_intersection = 0
         if self.go_left:
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
