@@ -44,6 +44,7 @@ class MyRob(CRobLinkAngs):
         #     print(i)
         w, h = 55, 27
         self.matrix = [[' ' for x in range(w)] for y in range(h)]
+        self.maze = [['1' for x in range(w)] for y in range(h)]
         print(len(self.matrix[0]))
 
 
@@ -109,21 +110,26 @@ class MyRob(CRobLinkAngs):
             self.offset_y = self.measures.y
             self.last_pos = (self.offset_x, self.offset_y)
             self.matrix[13][27] = 'O'
+            self.maze[13][27] = '0'
 
             if self.measures.irSensor[center_id] < 1.2:
                 self.matrix[13][28] = 'X'
+                self.maze[13][28] = '0'
             else:
                 self.matrix[13][28] = '|'
             if self.measures.irSensor[right_id] < 1.2:
                 self.matrix[27 - 13][27] = 'X'
+                self.maze[27 - 13][27] = '0'
             else:
                 self.matrix[27 - 13][27] = '-'
             if self.measures.irSensor[left_id] < 1.2:
                 self.matrix[25 - 13][27] = 'X'
+                self.maze[25 - 13][27] = '0'
             else:
                 self.matrix[25 - 13][27] = '-'
             if self.measures.irSensor[back_id] < 1.2:
                 self.matrix[13][26] = 'X'
+                self.maze[13][26] = '0'
             else:
                 self.matrix[13][26] = '|'
             # print('Initial x: ' + str(self.offset_x))
@@ -204,53 +210,65 @@ class MyRob(CRobLinkAngs):
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
+                    self.maze[26 - self.pos[1]][self.pos[0] + 1] = '0'
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 elif self.measures.compass < 100 and self.measures.compass > 80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
+                    self.maze[25 - self.pos[1]][self.pos[0]] = '0'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
+                    self.maze[26 - self.pos[1]][self.pos[0] - 1] = '0'
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
                 elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
+                    self.maze[27 - self.pos[1]][self.pos[0]] = '0'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
             if self.measures.irSensor[right_id] < 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
+                    self.maze[27 - self.pos[1]][self.pos[0]] = '0'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
                 elif self.measures.compass < 100 and self.measures.compass > 80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
+                    self.maze[26 - self.pos[1]][self.pos[0] + 1] = '0'
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
+                    self.maze[25 - self.pos[1]][self.pos[0]] = '0'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
+                    self.maze[26 - self.pos[1]][self.pos[0] - 1] = '0'
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
 
             if self.measures.irSensor[left_id] < 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
+                    self.maze[25 - self.pos[1]][self.pos[0]] = '0'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 elif self.measures.compass < 100 and self.measures.compass > 80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
+                    self.maze[26 - self.pos[1]][self.pos[0] - 1] = '0'
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
+                    self.maze[27 - self.pos[1]][self.pos[0]] = '0'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
                 elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
+                    self.maze[26 - self.pos[1]][self.pos[0] + 1] = '0'
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 print('Next position: ' + str(self.next_pos))
                 self.go_front = False
@@ -261,18 +279,22 @@ class MyRob(CRobLinkAngs):
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
+                    self.maze[26 - self.pos[1]][self.pos[0] + 1] = '0'
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 elif self.measures.compass < 100 and self.measures.compass > 80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
+                    self.maze[25 - self.pos[1]][self.pos[0]] = '0'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
+                    self.maze[26 - self.pos[1]][self.pos[0] - 1] = '0'
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
                 elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
+                    self.maze[27 - self.pos[1]][self.pos[0]] = '0'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
                 print('Next position: ' + str(self.next_pos))
                 self.go_front = True
@@ -283,18 +305,22 @@ class MyRob(CRobLinkAngs):
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
+                    self.maze[27 - self.pos[1]][self.pos[0]] = '0'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
                 elif self.measures.compass < 100 and self.measures.compass > 80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
+                    self.maze[26 - self.pos[1]][self.pos[0] + 1] = '0'
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
+                    self.maze[25 - self.pos[1]][self.pos[0]] = '0'
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
+                    self.maze[26 - self.pos[1]][self.pos[0] - 1] = '0'
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
                 print('Next position: ' + str(self.next_pos))
                 self.go_front = False
@@ -352,9 +378,14 @@ class MyRob(CRobLinkAngs):
                 # print(self.pos[0])
                 # print(self.pos[1])
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
+                self.maze[26 - self.pos[1]][self.pos[0]] = '0'
 
-                for i in self.matrix:
+                for i in self.maze:
                     print(''.join(i))
+
+                # for i in self.maze:
+                #     print(i)
+
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
@@ -390,9 +421,14 @@ class MyRob(CRobLinkAngs):
                 # print(self.pos[0])
                 # print(self.pos[1])
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
+                self.maze[26 - self.pos[1]][self.pos[0]] = '0'
 
                 for i in self.matrix:
                     print(''.join(i))
+
+                # for i in self.maze:
+                #     print(i)
+
                 self.first_call = 1
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
@@ -425,9 +461,14 @@ class MyRob(CRobLinkAngs):
                 # print(self.pos[0])
                 # print(self.pos[1])
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
+                self.maze[26 - self.pos[1]][self.pos[0]] = '0'
 
                 for i in self.matrix:
                     print(''.join(i))
+
+                # for i in self.maze:
+                #     print(i)
+
                 self.first_call = 1
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
@@ -460,9 +501,14 @@ class MyRob(CRobLinkAngs):
                 # print(self.pos[0])
                 # print(self.pos[1])
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
+                self.maze[26 - self.pos[1]][self.pos[0]] = '0'
 
-                for i in self.matrix:
+                for i in self.maze:
                     print(''.join(i))
+
+                # for i in self.maze:
+                #     print(i)
+
                 self.first_call = 1
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
