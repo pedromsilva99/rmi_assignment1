@@ -489,10 +489,11 @@ class MyRob(CRobLinkAngs):
                 self.walk = 0
                 return 1
                 #return True
-            elif ((self.measures.compass<(180-15) and self.measures.compass>(-180+15)) and direction == 'left'):
-                self.driveMotors(-0.10, 0.10)
-            elif ((self.measures.compass<(180-15) and self.measures.compass>(-180+15)) and direction == 'right'):
-                self.driveMotors(0.10, -0.10)
+            elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15)):
+                if(direction == 'left'):
+                    self.driveMotors(-0.10, 0.10)
+                else:
+                    self.driveMotors(0.10, -0.10)
             elif (self.measures.compass>(180-10) and self.measures.compass<(180-2)):
                 self.driveMotors(-0.05, 0.05)
             elif (self.measures.compass>(-180+2) and self.measures.compass<(-180+10)):
@@ -514,12 +515,11 @@ class MyRob(CRobLinkAngs):
             self.walk = 0
             return 1
             #return True
-        elif ((self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15)) and direction == 'left'):
-            print('GO TO THE LEFT')
-            self.driveMotors(-0.10, 0.10)
-        elif ((self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15)) and direction == 'right'):
-            print('GO TO THE RIGHT')
-            self.driveMotors(0.10, -0.10)
+        elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15)):
+            if(direction == 'left'):
+                self.driveMotors(-0.10, 0.10)
+            else:
+                self.driveMotors(0.10, -0.10)
         elif (self.measures.compass>(degrees-10) and self.measures.compass<(degrees-2)):
             self.driveMotors(-0.05, 0.05)
         elif (self.measures.compass>(degrees+2) and self.measures.compass<(degrees+10)):
