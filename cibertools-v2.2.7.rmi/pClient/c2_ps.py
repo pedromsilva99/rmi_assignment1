@@ -137,7 +137,8 @@ class MyRob(CRobLinkAngs):
         else:
             pass
         
-
+    #Extras
+    #self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
 
     def turn_right(self):
         print("virando à direita\n")

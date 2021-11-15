@@ -41,6 +41,9 @@ class MyRob(CRobLinkAngs):
         self.visited_squares = []
         self.squares_to_visit = []
         self.do_astar = True
+        self.previous = 0
+        self.previous_pos = (100,100)
+        self.flag = 0
         # w, h = 55, 27
         # self.matrix = [[' ' for x in range(w)] for y in range(h)]
         # for i in self.matrix:
@@ -105,7 +108,7 @@ class MyRob(CRobLinkAngs):
         left_id = 1
         right_id = 2
         back_id = 3
-
+        #return
         # if self.do_astar:
         #     maze = [
         #     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
@@ -118,16 +121,18 @@ class MyRob(CRobLinkAngs):
         #     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         #     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         #     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-        #
+        
         #     # (y, x) for some reason
         #     start = (0, 0)
         #     end = (3, 5)
-        #
+        
         #     path = astar(maze, start, end)
         #     print(path)
         #     return
 
         # print(self.measures.compass)
+        print("\n\n")
+        print(self.visited_squares)
         if self.init_val == 0:
             self.init_val = 1
             self.offset_x = self.measures.x
@@ -161,7 +166,7 @@ class MyRob(CRobLinkAngs):
                 self.squares_to_visit.append((13, 25))
             else:
                 self.matrix[13][26] = '|'
-            print(self.squares_to_visit)
+            #print(self.squares_to_visit)
             # print('Initial x: ' + str(self.offset_x))
             # print('Initial y: ' + str(self.offset_y))
             # print(self.measures.irSensor[center_id])
@@ -182,7 +187,7 @@ class MyRob(CRobLinkAngs):
                 self.count_intersection += 1
             if self.measures.irSensor[back_id] < 1.2:
                 self.count_intersection += 1
-            print(self.measures.compass)
+            #print(self.measures.compass)
 
             for t in self.visited_squares:
                 if t in self.squares_to_visit:
@@ -405,7 +410,19 @@ class MyRob(CRobLinkAngs):
                 # print("Intersection on: " + str(self.last_pos[0]) + ', ' + str(self.last_pos[1]))
                 print('Intersections: ' + str(self.intersections_ls))
             print('To visit' + str(self.squares_to_visit))
-
+        print("PREVIOUS")
+        print(self.previous)
+        if (26-self.pos[1],self.pos[0]) in self.visited_squares[:-1]:
+            if self.flag == 0:
+                self.previous_pos=26-self.pos[1],self.pos[0]
+                self.flag = 1
+                self.previous += 1
+                #se chegar a 5, a*
+            if self.previous_pos!=(26-self.pos[1],self.pos[0]):
+                self.flag = 0
+        else:
+            self.previous = 0
+            self.flag = 0
         self.count_intersection = 0
         if self.go_left:
             if self.next_pos[0] > self.last_pos[0]:
@@ -454,6 +471,7 @@ class MyRob(CRobLinkAngs):
                 self.first_call = 1
                 self.last_pos = self.next_pos
                 self.next_pos = (0, 0)
+
 
 
         if self.go_front:
