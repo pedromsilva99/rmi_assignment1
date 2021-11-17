@@ -164,7 +164,7 @@ class MyRob(CRobLinkAngs):
 
         if self.go_to_ls:
             #for i in len(self.ls)
-            self.next_pos = self.ls[self.i]
+            self.next_pos = (self.ls[self.i][0] + self.offset_x, self.ls[self.i][1] + self.offset_y)
             self.go_front = False
             self.go_left = False
             self.go_right = False
@@ -795,6 +795,8 @@ class MyRob(CRobLinkAngs):
                     self.next_pos = (0, 0)
         if self.go_back:
             print("ENTRA ATRÁS")
+            print("next_pos" + str(self.next_pos))
+            print("last_pos" + str(self.last_pos))
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
