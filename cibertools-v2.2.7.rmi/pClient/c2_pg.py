@@ -164,21 +164,22 @@ class MyRob(CRobLinkAngs):
 
         if self.go_to_ls:
             #for i in len(self.ls)
-            if self.i == len(self.ls):
+            self.next_pos = self.ls[self.i]
+            if self.i == len(self.ls)-1:
                 self.go_to_ls = False
-            if self.pos[0]>self.ls[1][0] and (26-self.pos[1])==self.ls[1][1]:
+            if self.pos[0]>self.ls[self.i][0] and (26-self.pos[1])==self.ls[self.i][1]:
                 self.go_front = False
                 self.go_left = True
                 self.go_right = False
                 self.go_back = False
                 print("esquerda")
-            elif self.pos[0]<self.ls[1][0] and (26-self.pos[1])==self.ls[1][1]:               
+            elif self.pos[0]<self.ls[self.i][0] and (26-self.pos[1])==self.ls[self.i][1]:               
                 self.go_front = False
                 self.go_left = False
                 self.go_right = True
                 self.go_back = False
                 print("direita")
-            elif self.pos[0]==self.ls[1][0] and (26-self.pos[1])>self.ls[1][1]:
+            elif self.pos[0]==self.ls[self.i][0] and (26-self.pos[1])>self.ls[self.i][1]:
                 self.go_front = True
                 self.go_left = False
                 self.go_right = False
