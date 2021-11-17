@@ -625,7 +625,7 @@ class MyRob(CRobLinkAngs):
                 self.previous_pos=26-self.pos[1],self.pos[0]
                 self.flag = 1
                 self.previous += 1
-                if self.previous == 5:
+                if self.previous == 2:
                     self.do_astar = True
                     return
             if self.previous_pos!=(26-self.pos[1],self.pos[0]):
@@ -639,22 +639,22 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'left') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'left') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'left') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             if self.stop_movement(self.next_pos):
 
@@ -691,22 +691,22 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'left') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'left') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'left') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             if self.stop_movement(self.next_pos):
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
@@ -736,22 +736,22 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'right') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'right') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'right') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'right') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             if self.stop_movement(self.next_pos):
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
@@ -786,22 +786,22 @@ class MyRob(CRobLinkAngs):
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             elif self.next_pos[0] < self.last_pos[0]:
                 if self.first_call:
                     if self.turn(-180, 'left') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             elif self.next_pos[1] > self.last_pos[1]:
                 if self.first_call:
                     if self.turn(90, 'left') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             elif self.next_pos[1] < self.last_pos[1]:
                 if self.first_call:
                     if self.turn(-90, 'left') == 1:
-                        self.driveMotors(0.12, 0.12)
+                        self.driveMotors(0.13, 0.13)
                         self.first_call = 0
             if self.stop_movement(self.next_pos):
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
