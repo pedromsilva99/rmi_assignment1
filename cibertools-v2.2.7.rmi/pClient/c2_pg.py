@@ -46,6 +46,9 @@ class MyRob(CRobLinkAngs):
         self.previous = 0
         self.previous_pos = (100,100)
         self.flag = 0
+        self.ls = []
+        self.go_to_ls = False
+        self.i = 1
         # w, h = 55, 27
         # self.matrix = [[' ' for x in range(w)] for y in range(h)]
         # for i in self.matrix:
@@ -130,18 +133,24 @@ class MyRob(CRobLinkAngs):
                 a.init_grid(55, 27, self.walls, start, end)
 
                 path = a.solve()
-                print(path)
+                #print(path)
 
                 try:
                     if len(path) < min:
                         min = len(path)
-                        ls = path[::2]
+                        self.ls = path[::2]
                 except:
                     pass
-            print(ls)
+            print(self.ls)
             # print(path)
-            for i in self.matrix:
-                print(''.join(i))
+            #for i in self.matrix:
+            #    print(''.join(i))
+            self.driveMotors(-0.1,0.1)
+            print(self.pos)
+            #self.go_to_this_pos(ls)
+            self.do_astar=False
+            self.go_to_ls = True
+            
             # start = (26 - self.pos[1], self.pos[0])
             # end = self.squares_to_visit[0]
             # # end = (13, 29)
@@ -151,8 +160,37 @@ class MyRob(CRobLinkAngs):
             # print('MAZE: ' + str(maze))
             # path = astar(maze, start, end)
             # print('Caminho do labirinto: ' + str(path))
-            exit()
+            #exit()
 
+        if self.go_to_ls:
+            #for i in len(self.ls)
+            if self.i == len(self.ls):
+                self.go_to_ls = False
+            if self.pos[0]>self.ls[1][0] and (26-self.pos[1])==self.ls[1][1]:
+                self.go_front = False
+                self.go_left = True
+                self.go_right = False
+                self.go_back = False
+                print("esquerda")
+            elif self.pos[0]<self.ls[1][0] and (26-self.pos[1])==self.ls[1][1]:               
+                self.go_front = False
+                self.go_left = False
+                self.go_right = True
+                self.go_back = False
+                print("direita")
+            elif self.pos[0]==self.ls[1][0] and (26-self.pos[1])>self.ls[1][1]:
+                self.go_front = True
+                self.go_left = False
+                self.go_right = False
+                self.go_back = False
+                print("cima")
+            else:
+                self.go_front = False
+                self.go_left = False
+                self.go_right = False
+                self.go_back = True
+                print("baixo")
+            #exit()
         # print(self.measures.compass)
         # print("\n\n")
         # print(self.visited_squares)
@@ -622,7 +660,11 @@ class MyRob(CRobLinkAngs):
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
-                self.next_pos = (0, 0)
+                if self.go_to_ls:
+                    self.i += 1
+                else:
+                    self.next_pos = (0, 0)
+                
 
 
 
@@ -671,7 +713,10 @@ class MyRob(CRobLinkAngs):
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
-                self.next_pos = (0, 0)
+                if self.go_to_ls:
+                    self.i += 1
+                else:
+                    self.next_pos = (0, 0)
         if self.go_right:
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
@@ -718,7 +763,10 @@ class MyRob(CRobLinkAngs):
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
-                self.next_pos = (0, 0)
+                if self.go_to_ls:
+                    self.i += 1
+                else:
+                    self.next_pos = (0, 0)
         if self.go_back:
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
@@ -765,7 +813,10 @@ class MyRob(CRobLinkAngs):
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
-                self.next_pos = (0, 0)
+                if self.go_to_ls:
+                    self.i += 1
+                else:
+                    self.next_pos = (0, 0)
 
 
         # if (self.measures.x < (self.offset_x + 2)):
