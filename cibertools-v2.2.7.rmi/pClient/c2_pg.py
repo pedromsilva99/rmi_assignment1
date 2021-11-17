@@ -48,6 +48,7 @@ class MyRob(CRobLinkAngs):
         self.flag = 0
         self.ls = []
         self.go_to_ls = False
+        self.complete_astar = False
         self.i = 1
         # w, h = 55, 27
         # self.matrix = [[' ' for x in range(w)] for y in range(h)]
@@ -104,8 +105,8 @@ class MyRob(CRobLinkAngs):
 
 
     def stop_movement(self, next_pos):
-        if self.next_pos[0] >= self.measures.x - 0.25 and self.next_pos[0] <= self.measures.x + 0.25 \
-        and self.next_pos[1] >= self.measures.y - 0.25 and self.next_pos[1] <= self.measures.y + 0.25:
+        if self.next_pos[0] >= self.measures.x - 0.20 and self.next_pos[0] <= self.measures.x + 0.20 \
+        and self.next_pos[1] >= self.measures.y - 0.20 and self.next_pos[1] <= self.measures.y + 0.20:
             return True
         else:
             return False
@@ -149,7 +150,7 @@ class MyRob(CRobLinkAngs):
             #self.go_to_this_pos(ls)
             self.do_astar=False
             self.go_to_ls = True
-            
+
             # start = (26 - self.pos[1], self.pos[0])
             # end = self.squares_to_visit[0]
             # # end = (13, 29)
@@ -164,20 +165,31 @@ class MyRob(CRobLinkAngs):
         if self.go_to_ls:
             #for i in len(self.ls)
             # self.last_pos = self.next_pos
+
+            if self.i == len(self.ls):
+                self.i = 1
+                self.complete_astar = False
+                self.next_pos = (0, 0)
+                self.go_to_ls = False
+                return
+
+            self.complete_astar = True
             if (self.ls[self.i-1][0] < self.ls[self.i][0]):
                 self.next_pos = (self.last_pos[0]+2, self.last_pos[1])
             elif (self.ls[self.i-1][0] > self.ls[self.i][0]):
                 self.next_pos = (self.last_pos[0]-2, self.last_pos[1])
             elif (self.ls[self.i-1][1] > self.ls[self.i][1]):
-                self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
-            elif (self.ls[self.i-1][1] < self.ls[self.i][1]):
                 self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
-                
+            elif (self.ls[self.i-1][1] < self.ls[self.i][1]):
+                self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+
+            print("Next pos: " + str(self.next_pos))
+
             self.go_front = False
             self.go_left = False
             self.go_right = False
             self.go_back = False
-            
+
             if self.pos[0]>self.ls[self.i][0] and (26-self.pos[1])==self.ls[self.i][1]:
                 if self.measures.compass > 80 and self.measures.compass<100:
                     self.go_left = True
@@ -187,7 +199,7 @@ class MyRob(CRobLinkAngs):
                     self.go_right = True
                 else:
                     self.go_front = True
-            elif self.pos[0]<self.ls[self.i][0] and (26-self.pos[1])==self.ls[self.i][1]:               
+            elif self.pos[0]<self.ls[self.i][0] and (26-self.pos[1])==self.ls[self.i][1]:
                 if self.measures.compass > 80 and self.measures.compass<100:
                     self.go_right = True
                 elif self.measures.compass > -10 and self.measures.compass<10:
@@ -215,9 +227,8 @@ class MyRob(CRobLinkAngs):
                 else:
                     self.go_left = True
             self.go_to_ls = False
-            self.i+=1
-            if self.i == len(self.ls):
-                self.i=1
+            self.i += 1
+
             #exit()
         # print(self.measures.compass)
         # print("\n\n")
@@ -614,7 +625,7 @@ class MyRob(CRobLinkAngs):
                 self.previous_pos=26-self.pos[1],self.pos[0]
                 self.flag = 1
                 self.previous += 1
-                if self.previous == 2:
+                if self.previous == 5:
                     self.do_astar = True
                     return
             if self.previous_pos!=(26-self.pos[1],self.pos[0]):
@@ -625,7 +636,6 @@ class MyRob(CRobLinkAngs):
         self.count_intersection = 0
 
         if self.go_left:
-            #print("ENTRA ESQUERDA")
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
@@ -647,7 +657,7 @@ class MyRob(CRobLinkAngs):
                         self.driveMotors(0.12, 0.12)
                         self.first_call = 0
             if self.stop_movement(self.next_pos):
-                
+
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
 
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
@@ -658,8 +668,8 @@ class MyRob(CRobLinkAngs):
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
 
-                # for i in self.maze:
-                #     print(''.join(i))
+                for i in self.matrix:
+                    print(''.join(i))
 
                 # print(self.visited_squares)
 
@@ -669,8 +679,11 @@ class MyRob(CRobLinkAngs):
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
-                self.next_pos = (0, 0)
-                
+                if not self.complete_astar:
+                    self.next_pos = (0, 0)
+                else:
+                    self.go_to_ls = True
+
 
 
 
@@ -707,15 +720,18 @@ class MyRob(CRobLinkAngs):
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
 
                 # print(self.visited_squares)
-                # for i in self.matrix:
-                #     print(''.join(i))
+                for i in self.matrix:
+                    print(''.join(i))
 
                 # for i in self.maze:
                 #     print(i)
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
-                self.next_pos = (0, 0)
+                if not self.complete_astar:
+                    self.next_pos = (0, 0)
+                else:
+                    self.go_to_ls = True
         if self.go_right:
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
@@ -754,15 +770,18 @@ class MyRob(CRobLinkAngs):
 
                 # print(self.visited_squares)
 
-                # for i in self.matrix:
-                #     print(''.join(i))
+                for i in self.matrix:
+                    print(''.join(i))
 
                 # for i in self.maze:
                 #     print(i)
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
-                self.next_pos = (0, 0)
+                if not self.complete_astar:
+                    self.next_pos = (0, 0)
+                else:
+                    self.go_to_ls = True
         if self.go_back:
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
@@ -801,15 +820,19 @@ class MyRob(CRobLinkAngs):
 
                 # print(self.visited_squares)
 
-                # for i in self.maze:
-                #     print(''.join(i))
+                for i in self.matrix:
+                    print(''.join(i))
 
                 # for i in self.maze:
                 #     print(i)
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
-                self.next_pos = (0, 0)
+
+                if not self.complete_astar:
+                    self.next_pos = (0, 0)
+                else:
+                    self.go_to_ls = True
 
     def turn(self, degrees, direction):
         if(degrees == -180 or degrees == 180):
