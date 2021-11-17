@@ -165,31 +165,52 @@ class MyRob(CRobLinkAngs):
         if self.go_to_ls:
             #for i in len(self.ls)
             self.next_pos = self.ls[self.i]
+            self.go_front = False
+            self.go_left = False
+            self.go_right = False
+            self.go_back = False
             if self.i == len(self.ls)-1:
                 self.go_to_ls = False
             if self.pos[0]>self.ls[self.i][0] and (26-self.pos[1])==self.ls[self.i][1]:
-                self.go_front = False
-                self.go_left = True
-                self.go_right = False
-                self.go_back = False
+                if self.measures.compass > 80 and self.measures.compass<100:
+                    self.go_left = True
+                if self.measures.compass > -10 and self.measures.compass<10:
+                    self.go_back = True
+                if self.measures.compass > -100 and self.measures.compass<-80:
+                    self.go_right = True
+                else:
+                    self.go_front = True
                 print("esquerda")
             elif self.pos[0]<self.ls[self.i][0] and (26-self.pos[1])==self.ls[self.i][1]:               
-                self.go_front = False
-                self.go_left = False
-                self.go_right = True
-                self.go_back = False
+                if self.measures.compass > 80 and self.measures.compass<100:
+                    self.go_right = True
+                if self.measures.compass > -10 and self.measures.compass<10:
+                    self.go_front = True
+                if self.measures.compass > -100 and self.measures.compass<-80:
+                    self.go_left = True
+                else:
+                    self.go_back = True
                 print("direita")
+                print(self.pos)
             elif self.pos[0]==self.ls[self.i][0] and (26-self.pos[1])>self.ls[self.i][1]:
-                self.go_front = True
-                self.go_left = False
-                self.go_right = False
-                self.go_back = False
+                if self.measures.compass > 80 and self.measures.compass<100:
+                    self.go_front = True
+                if self.measures.compass > -10 and self.measures.compass<10:
+                    self.go_left = True
+                if self.measures.compass > -100 and self.measures.compass<-80:
+                    self.go_back = True
+                else:
+                    self.go_right = True
                 print("cima")
             else:
-                self.go_front = False
-                self.go_left = False
-                self.go_right = False
-                self.go_back = True
+                if self.measures.compass > 80 and self.measures.compass<100:
+                    self.go_back = True
+                if self.measures.compass > -10 and self.measures.compass<10:
+                    self.go_right = True
+                if self.measures.compass > -100 and self.measures.compass<-80:
+                    self.go_front = True
+                else:
+                    self.go_left = True
                 print("baixo")
             #exit()
         # print(self.measures.compass)
@@ -614,6 +635,7 @@ class MyRob(CRobLinkAngs):
         self.count_intersection = 0
 
         if self.go_left:
+            print("ENTRA ESQUERDA")
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
@@ -670,6 +692,7 @@ class MyRob(CRobLinkAngs):
 
 
         if self.go_front:
+            print("ENTRA FRONT")
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
@@ -719,6 +742,8 @@ class MyRob(CRobLinkAngs):
                 else:
                     self.next_pos = (0, 0)
         if self.go_right:
+            print("ENTRA DIREITA")
+            print(self.next_pos)
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'right') == 1:
@@ -769,6 +794,7 @@ class MyRob(CRobLinkAngs):
                 else:
                     self.next_pos = (0, 0)
         if self.go_back:
+            print("ENTRA ATRÁS")
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
                     if self.turn(0, 'left') == 1:
