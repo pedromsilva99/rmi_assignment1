@@ -105,8 +105,8 @@ class MyRob(CRobLinkAngs):
 
 
     def stop_movement(self, next_pos):
-        if self.next_pos[0] >= self.measures.x - 0.20 and self.next_pos[0] <= self.measures.x + 0.20 \
-        and self.next_pos[1] >= self.measures.y - 0.20 and self.next_pos[1] <= self.measures.y + 0.20:
+        if self.next_pos[0] >= self.measures.x - 0.25 and self.next_pos[0] <= self.measures.x + 0.25 \
+        and self.next_pos[1] >= self.measures.y - 0.25 and self.next_pos[1] <= self.measures.y + 0.25:
             return True
         else:
             return False
@@ -171,63 +171,63 @@ class MyRob(CRobLinkAngs):
                 self.complete_astar = False
                 self.next_pos = (0, 0)
                 self.go_to_ls = False
-                return
-
-            self.complete_astar = True
-            if (self.ls[self.i-1][0] < self.ls[self.i][0]):
-                self.next_pos = (self.last_pos[0]+2, self.last_pos[1])
-            elif (self.ls[self.i-1][0] > self.ls[self.i][0]):
-                self.next_pos = (self.last_pos[0]-2, self.last_pos[1])
-            elif (self.ls[self.i-1][1] > self.ls[self.i][1]):
-                self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
-            elif (self.ls[self.i-1][1] < self.ls[self.i][1]):
-                self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
-
-            print("Next pos: " + str(self.next_pos))
-
-            self.go_front = False
-            self.go_left = False
-            self.go_right = False
-            self.go_back = False
-
-            if self.pos[0]>self.ls[self.i][0] and (26-self.pos[1])==self.ls[self.i][1]:
-                if self.measures.compass > 80 and self.measures.compass<100:
-                    self.go_left = True
-                elif self.measures.compass > -10 and self.measures.compass<10:
-                    self.go_back = True
-                elif self.measures.compass > -100 and self.measures.compass<-80:
-                    self.go_right = True
-                else:
-                    self.go_front = True
-            elif self.pos[0]<self.ls[self.i][0] and (26-self.pos[1])==self.ls[self.i][1]:
-                if self.measures.compass > 80 and self.measures.compass<100:
-                    self.go_right = True
-                elif self.measures.compass > -10 and self.measures.compass<10:
-                    self.go_front = True
-                elif self.measures.compass > -100 and self.measures.compass<-80:
-                    self.go_left = True
-                else:
-                    self.go_back = True
-            elif self.pos[0]==self.ls[self.i][0] and (26-self.pos[1])>self.ls[self.i][1]:
-                if self.measures.compass > 80 and self.measures.compass<100:
-                    self.go_front = True
-                elif self.measures.compass > -10 and self.measures.compass<10:
-                    self.go_left = True
-                elif self.measures.compass > -100 and self.measures.compass<-80:
-                    self.go_back = True
-                else:
-                    self.go_right = True
             else:
-                if self.measures.compass > 80 and self.measures.compass<100:
-                    self.go_back = True
-                if self.measures.compass > -10 and self.measures.compass<10:
-                    self.go_right = True
-                if self.measures.compass > -100 and self.measures.compass<-80:
-                    self.go_front = True
+
+                self.complete_astar = True
+                if (self.ls[self.i-1][0] < self.ls[self.i][0]):
+                    self.next_pos = (self.last_pos[0]+2, self.last_pos[1])
+                elif (self.ls[self.i-1][0] > self.ls[self.i][0]):
+                    self.next_pos = (self.last_pos[0]-2, self.last_pos[1])
+                elif (self.ls[self.i-1][1] > self.ls[self.i][1]):
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
+                elif (self.ls[self.i-1][1] < self.ls[self.i][1]):
+                    self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
+
+                print("Next pos: " + str(self.next_pos))
+
+                self.go_front = False
+                self.go_left = False
+                self.go_right = False
+                self.go_back = False
+
+                if self.pos[0]>self.ls[self.i][0] and (26-self.pos[1])==self.ls[self.i][1]:
+                    if self.measures.compass > 80 and self.measures.compass<100:
+                        self.go_left = True
+                    elif self.measures.compass > -10 and self.measures.compass<10:
+                        self.go_back = True
+                    elif self.measures.compass > -100 and self.measures.compass<-80:
+                        self.go_right = True
+                    else:
+                        self.go_front = True
+                elif self.pos[0]<self.ls[self.i][0] and (26-self.pos[1])==self.ls[self.i][1]:
+                    if self.measures.compass > 80 and self.measures.compass<100:
+                        self.go_right = True
+                    elif self.measures.compass > -10 and self.measures.compass<10:
+                        self.go_front = True
+                    elif self.measures.compass > -100 and self.measures.compass<-80:
+                        self.go_left = True
+                    else:
+                        self.go_back = True
+                elif self.pos[0]==self.ls[self.i][0] and (26-self.pos[1])>self.ls[self.i][1]:
+                    if self.measures.compass > 80 and self.measures.compass<100:
+                        self.go_front = True
+                    elif self.measures.compass > -10 and self.measures.compass<10:
+                        self.go_left = True
+                    elif self.measures.compass > -100 and self.measures.compass<-80:
+                        self.go_back = True
+                    else:
+                        self.go_right = True
                 else:
-                    self.go_left = True
-            self.go_to_ls = False
-            self.i += 1
+                    if self.measures.compass > 80 and self.measures.compass<100:
+                        self.go_back = True
+                    if self.measures.compass > -10 and self.measures.compass<10:
+                        self.go_right = True
+                    if self.measures.compass > -100 and self.measures.compass<-80:
+                        self.go_front = True
+                    else:
+                        self.go_left = True
+                self.go_to_ls = False
+                self.i += 1
 
             #exit()
         # print(self.measures.compass)
@@ -288,6 +288,14 @@ class MyRob(CRobLinkAngs):
                 self.squares_to_visit.append((13, 25))
             else:
                 self.matrix[13][26] = '|'
+
+        # The robot discovered the entire map
+        if self.squares_to_visit == []:
+            with open('out_file.txt', 'a') as out:
+                for i in self.matrix:
+                    out.write(''.join(i))
+                    out.write('\n')
+            self.finish()
 
         if self.next_pos == (0, 0):
             if self.measures.irSensor[left_id] < 1.2:
