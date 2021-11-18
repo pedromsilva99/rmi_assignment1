@@ -11,7 +11,7 @@
                          - - - - - - - - - - - - - -   
                         |XXXXXXX|XXXXXXXXX|XXXXXXXXX|  
                          - - X - X - - - X X - - - X   
-                        |XXXXXXXXX|XXXXX|X|XXXXXXXXX|  
+                        |XXIXXXXXX|XXXXX|X|XXXXXXXXX|  
                          X - - - X X - - X - X - - X   
                         |XXX|XXX|XXX|XXX|XXX|XXX|XXX|  
                          - X X - X - X X - X - X - X   

@@ -71,12 +71,12 @@ class MyRob(CRobLinkAngs):
         self.left_id = 1
         self.right_id = 2
         self.back_id = 3
-        
+
+        open('out_file.txt', 'w').close()
         #print("x: " + str(self.measures.x))
         #print("y: " + str(self.measures.y))
         #print("bussola: " + str(self.measures.compass))
         self.driveMotors(-0.005,0.005)
-        self.printMap()
         exit()
         #self.turn(180,'left')
 
@@ -139,24 +139,23 @@ class MyRob(CRobLinkAngs):
         
     #Extras
     #self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
-    [(25, 11), (27, 11), (29, 11), (29, 13), (31, 13), (33, 13), (33, 15)]
-                                                                                               
-                         - - - - - - - - - - - - - -   
-                        |XXXXXXX|XXXXXXXXX|XXXXXXXXX|  
-                         - - X - X - - - X X - - - X   
-                        |XXXXXXXXX|     |X|XXXX   XX|  
-                         X - - - X       X - X -   X   
-                        |XXX|           |XXX|XXX| XX|  
-                         - X             - X - X   X   
-                          |X|             |XXXXX| XX|  
-                         - X               - X X   X   
-                        |XXX|                     XX|  
-                         X -                       X   
-                        |X|                       XX|  
-                         X - X X - - X - - X - - - X   
-                        |XXXXXXXXXXXXXXXXXXXXXXXXXXX|  
-                         - - - - - - - - - - - - - -                                         
-    (25, 15)
+    # [(25, 11), (27, 11), (29, 11), (29, 13), (31, 13), (33, 13), (33, 15)]                                                                                          
+    #                      - - - - - - - - - - - - - -   
+    #                     |XXXXXXX|XXXXXXXXX|XXXXXXXXX|  
+    #                      - - X - X - - - X X - - - X   
+    #                     |XXXXXXXXX|     |X|XXXX   XX|  
+    #                      X - - - X       X - X -   X   
+    #                     |XXX|           |XXX|XXX| XX|  
+    #                      - X             - X - X   X   
+    #                       |X|             |XXXXX| XX|  
+    #                      - X               - X X   X   
+    #                     |XXX|                     XX|  
+    #                      X -                       X   
+    #                     |X|                       XX|  
+    #                      X - X X - - X - - X - - - X   
+    #                     |XXXXXXXXXXXXXXXXXXXXXXXXXXX|  
+    #                      - - - - - - - - - - - - - -                                         
+    # (25, 15)
 
     def turn_right(self):
         print("virando à direita\n")
