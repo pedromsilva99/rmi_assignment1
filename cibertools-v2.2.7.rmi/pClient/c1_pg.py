@@ -73,19 +73,32 @@ class MyRob(CRobLinkAngs):
         checkp = [0,1,2,0]
 
         if self.measures.irSensor[center_id] > 1.5:
-            # print('Nao vas em frente burro')
             if self.measures.irSensor[right_id] > self.measures.irSensor[left_id]:
                 self.driveMotors(-0.15, 0.15)
             else:
                 self.driveMotors(0.15, -0.15)
+        elif self.measures.irSensor[right_id] > 1.7 and self.measures.irSensor[right_id] < 2.7:
+            # print('Vira a esquerda')
+            self.driveMotors(0.11, 0.15)
+        elif self.measures.irSensor[left_id] > 1.7 and self.measures.irSensor[left_id] < 2.7:
+            # print('Vira a direita')
+            self.driveMotors(0.15, 0.11)
+        elif self.measures.irSensor[right_id] >= 2.7 and self.measures.irSensor[right_id] <= 3.7:
+            # print('Vira a esquerda')
+            self.driveMotors(0.09, 0.15)
+        elif self.measures.irSensor[left_id] >= 2.7 and self.measures.irSensor[left_id] <= 3.7:
+            # print('Vira a direita')
+            self.driveMotors(0.15, 0.09)
         elif self.measures.irSensor[right_id] > 3.7:
             # print('Vira a esquerda')
-            self.driveMotors(-0.07, 0.07)
+            self.driveMotors(-0.04, 0.10)
         elif self.measures.irSensor[left_id] > 3.7:
             # print('Vira a direita')
-            self.driveMotors(0.07, -0.07)
+            self.driveMotors(0.10, -0.04)
         else:
             self.driveMotors(0.15, 0.15)
+
+        # Verifies if the robot is going backwards
         if self.measures.ground != -1:
             if self.measures.ground != self.checkpoint and self.background_flag == True:
                 print("ENTRA")
