@@ -37,8 +37,6 @@ class MyRob(CRobLinkAngs):
         self.next_pos = (0, 0)
         self.walk = 0
         self.first_call = 1
-        self.count_intersection = 0
-        self.intersections_ls = []
         self.visited_squares = []
         self.squares_to_visit = []
         self.walls = []
@@ -50,19 +48,13 @@ class MyRob(CRobLinkAngs):
         self.go_to_ls = False
         self.complete_astar = False
         self.i = 1
-        # w, h = 55, 27
-        # self.matrix = [[' ' for x in range(w)] for y in range(h)]
-        # for i in self.matrix:
-        #     print(i)
         w, h = 55, 27
         self.matrix = [[' ' for x in range(w)] for y in range(h)]
         self.maze = [[1 for x in range(w)] for y in range(h)]
-        print(len(self.matrix[0]))
 
         for i in range(27):
             for j in range(55):
                 self.walls.append((j, i))
-        print(self.walls)
 
         self.go_left = False
         self.go_right = False
@@ -116,17 +108,11 @@ class MyRob(CRobLinkAngs):
         left_id = 1
         right_id = 2
         back_id = 3
-        #return
 
-        with open('out_file.txt', 'w') as out:
-                for i in self.matrix:
-                    out.write(''.join(i))
-                    out.write('\n')
 
         if self.do_astar:
             print('ENTROU NO DO ASTAR')
 
-            print(self.walls)
             min = 1000
 
             start = (self.pos[0], 26 - self.pos[1])
@@ -168,8 +154,7 @@ class MyRob(CRobLinkAngs):
             #exit()
 
         if self.go_to_ls:
-            #for i in len(self.ls)
-            # self.last_pos = self.next_pos
+            print('i: ' + str(self.i) + ' Len: ' + str(len(self.ls)))
 
             if self.i == len(self.ls):
                 self.i = 1
@@ -177,7 +162,7 @@ class MyRob(CRobLinkAngs):
                 self.next_pos = (0, 0)
                 self.go_to_ls = False
             else:
-
+                print('Entra ')
                 self.complete_astar = True
                 if (self.ls[self.i-1][0] < self.ls[self.i][0]):
                     self.next_pos = (self.last_pos[0]+2, self.last_pos[1])
@@ -243,8 +228,6 @@ class MyRob(CRobLinkAngs):
             self.offset_x = self.measures.x
             self.offset_y = self.measures.y
             self.last_pos = (self.offset_x, self.offset_y)
-            self.matrix[13][27] = 'O'
-            # self.maze[13][27] = 0
             if (27, 13) in self.walls:
                 self.walls.remove((27, 13))
             self.visited_squares.append((13, 27))
@@ -296,24 +279,15 @@ class MyRob(CRobLinkAngs):
 
         # The robot discovered the entire map
         if self.squares_to_visit == []:
-            self.matrix[13][27] = 'I'
-            #open('out_file.txt', 'w').close()
-            with open('out_file.txt', 'w') as out:
-                for i in self.matrix:
-                    out.write(''.join(i))
-                    out.write('\n')
             self.finish()
 
-        if self.next_pos == (0, 0):
-            if self.measures.irSensor[left_id] < 1.2:
-                self.count_intersection += 1
-            if self.measures.irSensor[center_id] < 1.2:
-                self.count_intersection += 1
-            if self.measures.irSensor[right_id] < 1.2:
-                self.count_intersection += 1
-            if self.measures.irSensor[back_id] < 1.2:
-                self.count_intersection += 1
+        with open('out_file.txt', 'w') as out:
+            self.matrix[13][27] = 'I'
+            for i in self.matrix:
+                out.write(''.join(i))
+                out.write('\n')
 
+        if self.next_pos == (0, 0):
             for t in self.visited_squares:
                 if t in self.squares_to_visit:
                     self.squares_to_visit.remove(t)
@@ -630,25 +604,20 @@ class MyRob(CRobLinkAngs):
                 self.go_left = False
                 self.go_right = False
                 self.go_back = True
-            if self.count_intersection >= 3:
-                if (self.last_pos[0], self.last_pos[1]) not in self.intersections_ls:
-                    self.intersections_ls.append((self.last_pos[0], self.last_pos[1]))
             print('To visit' + str(self.squares_to_visit))
 
-        if (26-self.pos[1],self.pos[0]) in self.visited_squares[:-1]:
+        if (26-self.pos[1],self.pos[0]) in self.visited_squares[:-1] and not self.complete_astar:
             if self.flag == 0:
                 self.previous_pos=26-self.pos[1],self.pos[0]
                 self.flag = 1
                 self.previous += 1
-                if self.previous == 2:
+                if self.previous == 1:
                     self.do_astar = True
-                    return
             if self.previous_pos!=(26-self.pos[1],self.pos[0]):
                 self.flag = 0
         else:
             self.previous = 0
             self.flag = 0
-        self.count_intersection = 0
 
         if self.go_left:
             if self.next_pos[0] > self.last_pos[0]:
@@ -851,7 +820,7 @@ class MyRob(CRobLinkAngs):
 
     def turn(self, degrees, direction):
         if(degrees == -180 or degrees == 180):
-            if self.walk == 4:
+            if self.walk == 3:
                 self.walk = 0
                 return 1
             elif (self.measures.compass<(180-15) and self.measures.compass>(-180+15)):
@@ -875,7 +844,7 @@ class MyRob(CRobLinkAngs):
                 else:
                     self.walk += 1
                     self.driveMotors(0,0)
-        elif self.walk == 4:
+        elif self.walk == 3:
             self.walk = 0
             return 1
         elif (self.measures.compass<(degrees-15) or self.measures.compass>(degrees+15)):

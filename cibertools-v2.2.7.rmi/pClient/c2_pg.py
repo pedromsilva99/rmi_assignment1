@@ -73,7 +73,7 @@ class MyRob(CRobLinkAngs):
             self.readSensors()
 
             if self.measures.endLed:
-                print(self.rob_name + " exiting")
+                print(self.robName + " exiting")
                 quit()
 
             if state == 'stop' and self.measures.start:
@@ -116,13 +116,8 @@ class MyRob(CRobLinkAngs):
         left_id = 1
         right_id = 2
         back_id = 3
-        #return
 
-        with open('out_file.txt', 'w') as out:
-                for i in self.matrix:
-                    out.write(''.join(i))
-                    out.write('\n')
-                    
+
         if self.do_astar:
             print('ENTROU NO DO ASTAR')
 
@@ -168,8 +163,6 @@ class MyRob(CRobLinkAngs):
             #exit()
 
         if self.go_to_ls:
-            #for i in len(self.ls)
-            # self.last_pos = self.next_pos
 
             if self.i == len(self.ls):
                 self.i = 1
@@ -296,13 +289,14 @@ class MyRob(CRobLinkAngs):
 
         # The robot discovered the entire map
         if self.squares_to_visit == []:
-            self.matrix[13][27] = 'I'
-            #open('out_file.txt', 'w').close()
-            with open('out_file.txt', 'w') as out:
-                for i in self.matrix:
-                    out.write(''.join(i))
-                    out.write('\n')
             self.finish()
+
+        self.matrix[13][27] = 'I'
+        #open('out_file.txt', 'w').close()
+        with open('out_file.txt', 'w') as out:
+            for i in self.matrix:
+                out.write(''.join(i))
+                out.write('\n')
 
         if self.next_pos == (0, 0):
             if self.measures.irSensor[left_id] < 1.2:
@@ -635,14 +629,13 @@ class MyRob(CRobLinkAngs):
                     self.intersections_ls.append((self.last_pos[0], self.last_pos[1]))
             print('To visit' + str(self.squares_to_visit))
 
-        if (26-self.pos[1],self.pos[0]) in self.visited_squares[:-1]:
+        if (26-self.pos[1],self.pos[0]) in self.visited_squares[:-1] and not self.complete_astar:
             if self.flag == 0:
                 self.previous_pos=26-self.pos[1],self.pos[0]
                 self.flag = 1
                 self.previous += 1
-                if self.previous == 2:
+                if self.previous == 1:
                     self.do_astar = True
-                    return
             if self.previous_pos!=(26-self.pos[1],self.pos[0]):
                 self.flag = 0
         else:
