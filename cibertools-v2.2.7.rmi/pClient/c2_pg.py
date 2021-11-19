@@ -118,6 +118,11 @@ class MyRob(CRobLinkAngs):
         back_id = 3
         #return
 
+        with open('out_file.txt', 'w') as out:
+                for i in self.matrix:
+                    out.write(''.join(i))
+                    out.write('\n')
+                    
         if self.do_astar:
             print('ENTROU NO DO ASTAR')
 
@@ -292,8 +297,8 @@ class MyRob(CRobLinkAngs):
         # The robot discovered the entire map
         if self.squares_to_visit == []:
             self.matrix[13][27] = 'I'
-            open('out_file.txt', 'w').close()
-            with open('out_file.txt', 'a') as out:
+            #open('out_file.txt', 'w').close()
+            with open('out_file.txt', 'w') as out:
                 for i in self.matrix:
                     out.write(''.join(i))
                     out.write('\n')
