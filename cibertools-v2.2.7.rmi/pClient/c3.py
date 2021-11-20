@@ -39,6 +39,7 @@ class MyRob(CRobLinkAngs):
         self.first_call = 1
         self.visited_squares = []
         self.squares_to_visit = []
+        self.beacons_ls = []
         self.walls = []
         self.do_astar = False
         self.previous = 0
@@ -47,6 +48,7 @@ class MyRob(CRobLinkAngs):
         self.ls = []
         self.go_to_ls = False
         self.complete_astar = False
+        self.checkpoints = True
         self.i = 1
         w, h = 55, 27
         self.matrix = [[' ' for x in range(w)] for y in range(h)]
@@ -97,6 +99,7 @@ class MyRob(CRobLinkAngs):
 
 
     def stop_movement(self, next_pos):
+
         if self.next_pos[0] >= self.measures.x - 0.25 and self.next_pos[0] <= self.measures.x + 0.25 \
         and self.next_pos[1] >= self.measures.y - 0.25 and self.next_pos[1] <= self.measures.y + 0.25:
             return True
@@ -277,15 +280,62 @@ class MyRob(CRobLinkAngs):
             else:
                 self.matrix[13][26] = '|'
 
-        # The robot discovered the entire map
+            print('Beacons: ' + str(self.nBeacons))
+            print(self.measures.ground)
+            if self.measures.ground == 0:
+                self.beacons_ls.append((27, 13))
+
+
+
+        # Save the path on file when the robot discovered the entire map
         if self.squares_to_visit == []:
+            final_path = []
+            for i in range(int(self.nBeacons)):
+                start = self.beacons_ls[i]
+                if i == int(self.nBeacons) - 1:
+                    end = self.beacons_ls[0]
+                else:
+                    end = self.beacons_ls[i + 1]
+                ls = self.path_to_beacon(start, end)
+                if i == int(self.nBeacons) - 1:
+                    for coor in ls:
+                        final_path.append(coor)
+                else:
+                    for coor in ls[:-1]:
+                        final_path.append(coor)
+            # Fazer A star para todos os beacons e de volta ao 0 0
+            print(final_path)
+
+            with open('out_file3.txt', 'w') as out:
+                for j in final_path:
+                    out.write(str(j[0]) + ' ' + str(j[1]))
+                    out.write('\n')
             self.finish()
 
-        with open('out_file.txt', 'w') as out:
-            self.matrix[13][27] = 'I'
-            for i in self.matrix:
-                out.write(''.join(i))
-                out.write('\n')
+        # Save on file when all beacons are discovered
+        if len(self.beacons_ls) == int(self.nBeacons) and self.checkpoints:
+            final_path = []
+            self.checkpoints = False
+            for i in range(int(self.nBeacons)):
+                start = self.beacons_ls[i]
+                if i == int(self.nBeacons) - 1:
+                    end = self.beacons_ls[0]
+                else:
+                    end = self.beacons_ls[i + 1]
+                ls = self.path_to_beacon(start, end)
+
+                if i == int(self.nBeacons) - 1:
+                    for coor in ls:
+                        final_path.append(coor)
+                else:
+                    for coor in ls[:-1]:
+                        final_path.append(coor)
+            print(final_path)
+            with open('out_file3.txt', 'w') as out:
+                for j in final_path:
+                    out.write(str(j[0]) + ' ' + str(j[1]))
+                    out.write('\n')
+
 
         if self.next_pos == (0, 0):
             for t in self.visited_squares:
@@ -606,14 +656,15 @@ class MyRob(CRobLinkAngs):
                 self.go_back = True
             print('To visit' + str(self.squares_to_visit))
 
-        if (26-self.pos[1],self.pos[0]) in self.visited_squares[:-1] and not self.complete_astar:
+        next_position = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
+        if (26-next_position[1],next_position[0]) in self.visited_squares[:-1] and not self.complete_astar:
             if self.flag == 0:
-                self.previous_pos=26-self.pos[1],self.pos[0]
+                self.previous_pos=26-next_position[1],next_position[0]
                 self.flag = 1
                 self.previous += 1
                 if self.previous == 1:
                     self.do_astar = True
-            if self.previous_pos!=(26-self.pos[1],self.pos[0]):
+            if self.previous_pos!=(26-next_position[1],next_position[0]):
                 self.flag = 0
         else:
             self.previous = 0
@@ -643,6 +694,21 @@ class MyRob(CRobLinkAngs):
             if self.stop_movement(self.next_pos):
 
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
+                print(self.measures.ground)
+                if self.measures.ground != -1 and self.measures.ground != 0 and (self.pos[0], 26 - self.pos[1]) not in self.beacons_ls:
+                    self.beacons_ls.append((self.pos[0], 26 - self.pos[1]))
+                    print('Beacon position: ' + str((self.pos[0], 26 - self.pos[1])))
+
+                    if len(self.beacons_ls) > 1:
+                        start = (self.beacons_ls[0][0], self.beacons_ls[0][1])
+                        end = (self.beacons_ls[1][0], self.beacons_ls[1][1])
+                        self.ls = self.path_to_beacon(start, end)
+                        print(self.ls)
+
+                        with open('out_file3.txt', 'w') as out:
+                            for j in self.ls:
+                                out.write(str(j[0]) + ' ' + str(j[1]))
+                                out.write('\n')
 
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
                 # self.maze[26 - self.pos[1]][self.pos[0]] = 0
@@ -694,6 +760,21 @@ class MyRob(CRobLinkAngs):
                         self.first_call = 0
             if self.stop_movement(self.next_pos):
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
+                print(self.measures.ground)
+                if self.measures.ground != -1 and self.measures.ground != 0 and (self.pos[0], 26 - self.pos[1]) not in self.beacons_ls:
+                    self.beacons_ls.append((self.pos[0], 26 - self.pos[1]))
+                    print('Beacon position: ' + str((self.pos[0], 26 - self.pos[1])))
+
+                    if len(self.beacons_ls) > 1:
+                        start = (self.beacons_ls[0][0], self.beacons_ls[0][1])
+                        end = (self.beacons_ls[1][0], self.beacons_ls[1][1])
+                        self.ls = self.path_to_beacon(start, end)
+                        print(self.ls)
+
+                        with open('out_file3.txt', 'w') as out:
+                            for j in self.ls:
+                                out.write(str(j[0]) + ' ' + str(j[1]))
+                                out.write('\n')
 
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
                 # self.maze[26 - self.pos[1]][self.pos[0]] = 0
@@ -739,7 +820,21 @@ class MyRob(CRobLinkAngs):
                         self.first_call = 0
             if self.stop_movement(self.next_pos):
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
+                print(self.measures.ground)
+                if self.measures.ground != -1 and self.measures.ground != 0 and (self.pos[0], 26 - self.pos[1]) not in self.beacons_ls:
+                    self.beacons_ls.append((self.pos[0], 26 - self.pos[1]))
+                    print('Beacon position: ' + str((self.pos[0], 26 - self.pos[1])))
 
+                    if len(self.beacons_ls) > 1:
+                        start = (self.beacons_ls[0][0], self.beacons_ls[0][1])
+                        end = (self.beacons_ls[1][0], self.beacons_ls[1][1])
+                        self.ls = self.path_to_beacon(start, end)
+                        print(self.ls)
+
+                        with open('out_file3.txt', 'w') as out:
+                            for j in self.ls:
+                                out.write(str(j[0]) + ' ' + str(j[1]))
+                                out.write('\n')
                 # print('Stopped on position: ' + str(self.pos))
                 #
                 # print(self.pos[0])
@@ -790,6 +885,23 @@ class MyRob(CRobLinkAngs):
             if self.stop_movement(self.next_pos):
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
 
+                if self.measures.ground != -1 and self.measures.ground != 0 and (self.pos[0], 26 - self.pos[1]) not in self.beacons_ls:
+                    self.beacons_ls.append((self.pos[0], 26 - self.pos[1]))
+                    print('Beacon position: ' + str((self.pos[0], 26 - self.pos[1])))
+
+                    if len(self.beacons_ls) > 1:
+                        start = (self.beacons_ls[0][0], self.beacons_ls[0][1])
+                        end = (self.beacons_ls[1][0], self.beacons_ls[1][1])
+                        self.ls = self.path_to_beacon(start, end)
+                        print(self.ls)
+
+                        with open('out_file3.txt', 'w') as out:
+                            for j in self.ls:
+                                out.write(str(j[0]) + ' ' + str(j[1]))
+                                out.write('\n')
+
+
+
                 # print('Stopped on position: ' + str(self.pos))
                 #
                 # print(self.pos[0])
@@ -817,6 +929,17 @@ class MyRob(CRobLinkAngs):
                     self.next_pos = (0, 0)
                 else:
                     self.go_to_ls = True
+
+    def path_to_beacon(self, start, end):
+        a = AStar()
+        a.init_grid(55, 27, self.walls, start, end)
+        path = a.solve()
+        path = path[::2]
+
+        path_to_return = []
+        for i in path:
+            path_to_return.append((i[0] - 27, 13 - i[1]))
+        return path_to_return
 
     def turn(self, degrees, direction):
         if(degrees == -180 or degrees == 180):
