@@ -629,14 +629,17 @@ class MyRob(CRobLinkAngs):
                     self.intersections_ls.append((self.last_pos[0], self.last_pos[1]))
             print('To visit' + str(self.squares_to_visit))
 
-        if (26-self.pos[1],self.pos[0]) in self.visited_squares[:-1] and not self.complete_astar:
+        next_position = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
+        if (26-next_position[1],next_position[0]) in self.visited_squares[:-1] and not self.complete_astar:
+            
             if self.flag == 0:
-                self.previous_pos=26-self.pos[1],self.pos[0]
+                self.previous_pos=26-next_position[1],next_position[0]
                 self.flag = 1
                 self.previous += 1
+                #print("PREVIOUS " + str(self.previous))
                 if self.previous == 1:
                     self.do_astar = True
-            if self.previous_pos!=(26-self.pos[1],self.pos[0]):
+            if self.previous_pos!=(26-next_position[1],next_position[0]):
                 self.flag = 0
         else:
             self.previous = 0
