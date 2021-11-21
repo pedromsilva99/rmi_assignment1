@@ -28,7 +28,11 @@ class MyRob(CRobLinkAngs):
         state = 'stop'
         stopped_state = 'run'
         self.background_flag = False
-        self.checkpoint = 0
+        self.checkpoint = 10
+        self.back_s = 0
+        self.front_s = 0
+        self.i = 0
+        self.new_flag = True
 
         while True:
             self.readSensors()
@@ -70,49 +74,65 @@ class MyRob(CRobLinkAngs):
         left_id = 1
         right_id = 2
         back_id = 3
-        checkp = [0,1,2,0]
 
+        #Sees if the center sensor is close to a wall
         if self.measures.irSensor[center_id] > 1.5:
+            #Decides where to go based on the distance to the walls on the side vectors
             if self.measures.irSensor[right_id] > self.measures.irSensor[left_id]:
                 self.driveMotors(-0.15, 0.15)
             else:
                 self.driveMotors(0.15, -0.15)
+        #Adjust the position to not collide with side walls
         elif self.measures.irSensor[right_id] > 1.7 and self.measures.irSensor[right_id] < 2.7:
-            # print('Vira a esquerda')
             self.driveMotors(0.11, 0.15)
         elif self.measures.irSensor[left_id] > 1.7 and self.measures.irSensor[left_id] < 2.7:
-            # print('Vira a direita')
             self.driveMotors(0.15, 0.11)
         elif self.measures.irSensor[right_id] >= 2.7 and self.measures.irSensor[right_id] <= 3.7:
-            # print('Vira a esquerda')
             self.driveMotors(0.09, 0.15)
         elif self.measures.irSensor[left_id] >= 2.7 and self.measures.irSensor[left_id] <= 3.7:
-            # print('Vira a direita')
             self.driveMotors(0.15, 0.09)
         elif self.measures.irSensor[right_id] > 3.7:
-            # print('Vira a esquerda')
             self.driveMotors(-0.04, 0.10)
         elif self.measures.irSensor[left_id] > 3.7:
-            # print('Vira a direita')
             self.driveMotors(0.10, -0.04)
+        #Go forward
         else:
             self.driveMotors(0.15, 0.15)
 
         # Verifies if the robot is going backwards
         if self.measures.ground != -1:
-            if self.measures.ground != self.checkpoint and self.background_flag == True:
-                print("ENTRA")
-                if checkp[self.checkpoint+1] == self.measures.ground:
-                    self.checkpoint = self.measures.ground
-                    print("CHECKPOINT " + str(self.checkpoint) + "\n")
+            if self.measures.ground != self.checkpoint and self.new_flag:
+                print("Checkpoint: " + str(self.measures.ground))
+                self.checkpoint = self.measures.ground
+                self.new_flag = False
+            elif self.measures.ground == self.checkpoint and self.new_flag: 
+                self.background_flag = True
+                self.new_flag = False
+        else:
+            self.new_flag = True
+
+        #When the robot is going in the wrong direction
+        if self.background_flag:
+            if self.i == 0:
+                self.i = 1
+                self.back_s = self.measures.irSensor[back_id]
+                self.front_s = self.measures.irSensor[center_id]
+                self.driveMotors(-0.15,0.15)
+            elif self.i <=3:
+                self.i += 1
+                self.driveMotors(-0.15,0.15)
+            else:
+                if self.compare(self.measures.irSensor[back_id],self.measures.irSensor[center_id]):
                     self.background_flag = False
                 else:
-                    print("voltou para tras")
-            elif self.measures.ground == self.checkpoint and self.background_flag == True:
-                print("VOLTOU PARA TRAS")
-                self.checkpoint = self.measures.ground
+                    self.driveMotors(-0.03,0.03)
+
+    #Compares the values stored from the center and back sensors with their previous values
+    def compare(self, back,front):
+        if front > self.back_s - 0.2 and front < self.back_s + 0.2 and back > self.front_s - 0.2 and back < self.front_s + 0.2:
+            return True
         else:
-            self.background_flag = True
+            return False
 
 class Map():
     def __init__(self, filename):

@@ -1,4 +1,3 @@
-
 BEGIN {
    line=1
    score=0
