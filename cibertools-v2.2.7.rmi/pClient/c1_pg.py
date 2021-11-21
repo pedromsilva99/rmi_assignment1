@@ -28,7 +28,11 @@ class MyRob(CRobLinkAngs):
         state = 'stop'
         stopped_state = 'run'
         self.background_flag = False
-        self.checkpoint = 0
+        self.checkpoint = 10
+        self.back_s = 0
+        self.front_s = 0
+        self.i = 0
+        self.new_flag = True
 
         while True:
             self.readSensors()
@@ -70,13 +74,11 @@ class MyRob(CRobLinkAngs):
         left_id = 1
         right_id = 2
         back_id = 3
-        checkp = [0,1,2,0]
-
-        if self.measures.irSensor[center_id] > 1.5:
+        if self.measures.irSensor[center_id] > 1.1:
             if self.measures.irSensor[right_id] > self.measures.irSensor[left_id]:
-                self.driveMotors(-0.15, 0.15)
+                self.driveMotors(0.02, 0.15)
             else:
-                self.driveMotors(0.15, -0.15)
+                self.driveMotors(0.15, 0.02)
         elif self.measures.irSensor[right_id] > 1.7 and self.measures.irSensor[right_id] < 2.7:
             # print('Vira a esquerda')
             self.driveMotors(0.11, 0.15)
@@ -100,19 +102,40 @@ class MyRob(CRobLinkAngs):
 
         # Verifies if the robot is going backwards
         if self.measures.ground != -1:
-            if self.measures.ground != self.checkpoint and self.background_flag == True:
-                print("ENTRA")
-                if checkp[self.checkpoint+1] == self.measures.ground:
-                    self.checkpoint = self.measures.ground
-                    print("CHECKPOINT " + str(self.checkpoint) + "\n")
+            print(self.checkpoint)
+            if self.measures.ground != self.checkpoint and self.new_flag:
+                self.checkpoint = self.measures.ground
+                self.new_flag = False
+            elif self.measures.ground == self.checkpoint and self.new_flag: 
+                self.background_flag = True
+                self.new_flag = False
+        else:
+            self.new_flag = True
+
+        if self.background_flag:
+            if self.i == 0:
+                self.i = 1
+                self.back_s = self.measures.irSensor[back_id]
+                self.front_s = self.measures.irSensor[center_id]
+                self.driveMotors(-0.15,0.15)
+            elif self.i <=3:
+                self.i += 1
+                self.driveMotors(-0.15,0.15)
+            else:
+                if self.compare(self.measures.irSensor[back_id],self.measures.irSensor[center_id]):
                     self.background_flag = False
                 else:
-                    print("voltou para tras")
-            elif self.measures.ground == self.checkpoint and self.background_flag == True:
-                print("VOLTOU PARA TRÁS")
-                self.checkpoint = self.measures.ground
+                    self.driveMotors(-0.03,0.03)
+
+    def compare(self, back,front):
+        print("back " + str(self.back_s))
+        print("front " + str(self.front_s))
+        print("Sensor frente " + str(front))
+        print("Sensor trás " + str(back))
+        if front > self.back_s - 0.2 and front < self.back_s + 0.2 and back > self.front_s - 0.2 and back < self.front_s + 0.2:
+            return True
         else:
-            self.background_flag = True
+            return False
 
 class Map():
     def __init__(self, filename):
@@ -152,7 +175,7 @@ for i in range(1, len(sys.argv),2):
         host = sys.argv[i + 1]
     elif (sys.argv[i] == "--pos" or sys.argv[i] == "-p") and i != len(sys.argv) - 1:
         pos = int(sys.argv[i + 1])
-    elif (sys.argv[i] == "--robname" or sys.argv[i] == "-p") and i != len(sys.argv) - 1:
+    elif (sys.argv[i] == "--robname" or sys.argv[i] == "-r") and i != len(sys.argv) - 1:
         rob_name = sys.argv[i + 1]
     elif (sys.argv[i] == "--map" or sys.argv[i] == "-m") and i != len(sys.argv) - 1:
         mapc = Map(sys.argv[i + 1])

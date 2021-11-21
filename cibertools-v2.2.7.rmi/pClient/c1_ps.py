@@ -31,6 +31,10 @@ class MyRob(CRobLinkAngs):
         self.turn_left_signal = 0
         self.turn_right_signal = 0
         self.emergency_signal = 0
+        self.back_s = 0
+        self.front_s = 0
+        self.i = 0
+        self.go_back = True
 
         while True:
             self.readSensors()
@@ -74,93 +78,35 @@ class MyRob(CRobLinkAngs):
         self.back_id = 3
         
         
-        print("Sensor esquerdo " + str(self.measures.irSensor[self.left_id]))
-        print("Sensor direito " + str(self.measures.irSensor[self.right_id]))
+        # print("Sensor esquerdo " + str(self.measures.irSensor[self.left_id]))
+        # print("Sensor direito " + str(self.measures.irSensor[self.right_id]))
+        # print("Sensor frente " + str(self.measures.irSensor[self.center_id]))
+        # print("Sensor trás " + str(self.measures.irSensor[self.back_id]))
+        
+        
+        if self.go_back:
+            if self.i == 0:
+                self.i = 1
+                self.back_s = self.measures.irSensor[self.back_id]
+                self.front_s = self.measures.irSensor[self.center_id]
+                self.driveMotors(-0.15,0.15)
+            else:
+                if self.compare(self.measures.irSensor[self.back_id],self.measures.irSensor[self.center_id]):
+                    self.go_back = False
+                else:
+                    self.driveMotors(-0.05,0.05)
+        else:
+            self.driveMotors(0,0)
+
+    def compare(self, back,front):
+        print("back " + str(self.back_s))
+        print("front " + str(self.front_s))
         print("Sensor frente " + str(self.measures.irSensor[self.center_id]))
         print("Sensor trás " + str(self.measures.irSensor[self.back_id]))
-        
-        if self.turn_left_signal==1:
-            self.turn_left()
-
-        elif self.turn_right_signal==1:
-            self.turn_right()
-
-        elif self.emergency_signal ==1:
-            self.emergency()
-
-        elif self.measures.irSensor[self.center_id] > 6.0:
-            self.emergency_signal = 1
-
-        elif self.measures.irSensor[self.center_id] > 1.1 and self.measures.irSensor[self.right_id] < 1.0:
-            self.turn_right_signal = 1
-
-        elif self.measures.irSensor[self.center_id] > 1.1 and self.measures.irSensor[self.left_id] < 1.0:
-            self.turn_left_signal = 1
-        
-        elif self.measures.irSensor[self.right_id] > 4.0:
-            self.turn_slight_left() 
-
-        elif self.measures.irSensor[self.left_id] > 4.0:
-            self.turn_slight_right()
-
+        if back > self.back_s - 0.2 and back < self.back_s + 0.2 and front > self.front_s - 0.2 and front < self.front_s + 0.2:
+            return True
         else:
-            print("Em frente")
-            self.driveMotors(0.10,0.10)
-
-        #professor code
-        # if    self.measures.irSensor[center_id] > 5.0\
-        #    or self.measures.irSensor[left_id]   > 5.0\
-        #    or self.measures.irSensor[right_id]  > 5.0\
-        #    or self.measures.irSensor[back_id]   > 5.0:
-        #     print('Rotate left')
-        #     self.driveMotors(-0.1,+0.1)
-        # elif self.measures.irSensor[left_id]> 2.7:
-        #     print('Rotate slowly right')
-        #     self.driveMotors(0.1,0.0)
-        # elif self.measures.irSensor[right_id]> 2.7:
-        #     print('Rotate slowly left')
-        #     self.driveMotors(0.0,0.1)
-        # else:
-        #     print('Go')
-        #     self.driveMotors(0.1,0.1)
-
-    def turn_right(self):
-        print("virando à direita\n")
-        self.driveMotors(0.05,-0.05)
-        if self.measures.irSensor[self.center_id] < 0.8:# and self.measures.irSensor[self.left_id] > 1.3:
-            self.turn_right_signal = 0
-
-    def turn_left(self):
-        print("virando à esquerda\n")
-        self.driveMotors(-0.05,0.05)
-        if self.measures.irSensor[self.center_id] < 0.8: # and self.measures.irSensor[self.right_id] > 1.3:
-            self.turn_left_signal = 0
-
-    def turn_slight_left(self):
-        print("ajustando à esquerda\n")
-        self.driveMotors(-0.05,0.05)
-
-    def turn_slight_right(self):
-        print("ajustando à direita\n")
-        self.driveMotors(0.05,-0.05)
-
-    def emergency(self):
-        print("Emergencia\n")
-
-        if self.measures.irSensor[self.center_id] < 2.0:
-            self.emergency_signal = 0
-        elif self.measures.irSensor[self.left_id] < 1.5:
-            print("emeregencia à esquerda\n")
-            self.driveMotors(-0.05,0.05)
-        elif self.measures.irSensor[self.left_id] < 1.5:
-            print("emergencia à direita\n")
-            self.driveMotors(0.05,-0.05)
-        else:
-            self.driveMotors(0.05,-0.05)
-            print("Sem saída")
-
-
-
+            return False
 
 class Map():
     def __init__(self, filename):
