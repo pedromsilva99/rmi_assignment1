@@ -32,7 +32,7 @@ class MyRob(CRobLinkAngs):
         self.back_s = 0
         self.front_s = 0
         self.i = 0
-        self.new_flag = True
+        self.first_ground_value = True
 
         while True:
             self.readSensors()
@@ -75,14 +75,14 @@ class MyRob(CRobLinkAngs):
         right_id = 2
         back_id = 3
 
-        #Sees if the center sensor is close to a wall
+        # Sees if the center sensor is close to a wall
         if self.measures.irSensor[center_id] > 1.5:
-            #Decides where to go based on the distance to the walls on the side vectors
+            # Decides where to go based on the distance to the walls on the side vectors
             if self.measures.irSensor[right_id] > self.measures.irSensor[left_id]:
                 self.driveMotors(-0.15, 0.15)
             else:
                 self.driveMotors(0.15, -0.15)
-        #Adjust the position to not collide with side walls
+        # Adjust the position to not collide with side walls
         elif self.measures.irSensor[right_id] > 1.7 and self.measures.irSensor[right_id] < 2.7:
             self.driveMotors(0.11, 0.15)
         elif self.measures.irSensor[left_id] > 1.7 and self.measures.irSensor[left_id] < 2.7:
@@ -95,23 +95,23 @@ class MyRob(CRobLinkAngs):
             self.driveMotors(-0.04, 0.10)
         elif self.measures.irSensor[left_id] > 3.7:
             self.driveMotors(0.10, -0.04)
-        #Go forward
+        # Go forward
         else:
             self.driveMotors(0.15, 0.15)
 
         # Verifies if the robot is going backwards
         if self.measures.ground != -1:
-            if self.measures.ground != self.checkpoint and self.new_flag:
+            if self.measures.ground != self.checkpoint and self.first_ground_value:
                 print("Checkpoint: " + str(self.measures.ground))
                 self.checkpoint = self.measures.ground
-                self.new_flag = False
-            elif self.measures.ground == self.checkpoint and self.new_flag: 
+                self.first_ground_value = False
+            elif self.measures.ground == self.checkpoint and self.first_ground_value:
                 self.background_flag = True
-                self.new_flag = False
+                self.first_ground_value = False
         else:
-            self.new_flag = True
+            self.first_ground_value = True
 
-        #When the robot is going in the wrong direction
+        # When the robot is going in the wrong direction
         if self.background_flag:
             if self.i == 0:
                 self.i = 1
@@ -127,7 +127,7 @@ class MyRob(CRobLinkAngs):
                 else:
                     self.driveMotors(-0.03,0.03)
 
-    #Compares the values stored from the center and back sensors with their previous values
+    # Compares the values stored from the center and back sensors with their previous values
     def compare(self, back,front):
         if front > self.back_s - 0.2 and front < self.back_s + 0.2 and back > self.front_s - 0.2 and back < self.front_s + 0.2:
             return True

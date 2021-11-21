@@ -121,16 +121,14 @@ class MyRob(CRobLinkAngs):
                 a = AStar()
                 end = (i[1], i[0])
                 a.init_grid(55, 27, self.walls, start, end)
-
                 path = a.solve()
-
                 try:
                     if len(path) < min:
                         min = len(path)
                         self.ls = path[::2]
                 except:
                     pass
-            self.do_astar=False
+            self.do_astar = False
             self.go_to_ls = True
 
         # Does the path the astar returns
@@ -262,11 +260,15 @@ class MyRob(CRobLinkAngs):
                 else:
                     end = self.beacons_ls[i + 1]
                 ls = self.path_to_beacon(start, end)
+                if i != 0:
+                    final_path.append((str(ls[0][0]), str(ls[0][1]) + ' #' + str(i)))
+                else:
+                    final_path.append(ls[0])
                 if i == int(self.nBeacons) - 1:
-                    for coor in ls:
+                    for coor in ls[1:]:
                         final_path.append(coor)
                 else:
-                    for coor in ls[:-1]:
+                    for coor in ls[1:-1]:
                         final_path.append(coor)
 
             with open(out_file, 'w') as out:
@@ -286,12 +288,15 @@ class MyRob(CRobLinkAngs):
                 else:
                     end = self.beacons_ls[i + 1]
                 ls = self.path_to_beacon(start, end)
-
+                if i != 0:
+                    final_path.append((str(ls[0][0]), str(ls[0][1]) + ' #' + str(i)))
+                else:
+                    final_path.append(ls[0])
                 if i == int(self.nBeacons) - 1:
-                    for coor in ls:
+                    for coor in ls[1:]:
                         final_path.append(coor)
                 else:
-                    for coor in ls[:-1]:
+                    for coor in ls[1:-1]:
                         final_path.append(coor)
             with open(out_file, 'w') as out:
                 for j in final_path:
@@ -650,7 +655,7 @@ class MyRob(CRobLinkAngs):
                         start = (self.beacons_ls[0][0], self.beacons_ls[0][1])
                         end = (self.beacons_ls[1][0], self.beacons_ls[1][1])
                         self.ls = self.path_to_beacon(start, end)
-
+                        self.ls[-1] = (str(self.ls[-1][0]), str(self.ls[-1][1]) + ' #' + str(self.measures.ground))
                         with open(out_file, 'w') as out:
                             for j in self.ls:
                                 out.write(str(j[0]) + ' ' + str(j[1]))
@@ -703,7 +708,7 @@ class MyRob(CRobLinkAngs):
                         start = (self.beacons_ls[0][0], self.beacons_ls[0][1])
                         end = (self.beacons_ls[1][0], self.beacons_ls[1][1])
                         self.ls = self.path_to_beacon(start, end)
-
+                        self.ls[-1] = (str(self.ls[-1][0]), str(self.ls[-1][1]) + ' #' + str(self.measures.ground))
                         with open(out_file, 'w') as out:
                             for j in self.ls:
                                 out.write(str(j[0]) + ' ' + str(j[1]))
@@ -755,7 +760,7 @@ class MyRob(CRobLinkAngs):
                         start = (self.beacons_ls[0][0], self.beacons_ls[0][1])
                         end = (self.beacons_ls[1][0], self.beacons_ls[1][1])
                         self.ls = self.path_to_beacon(start, end)
-
+                        self.ls[-1] = (str(self.ls[-1][0]), str(self.ls[-1][1]) + ' #' + str(self.measures.ground))
                         with open(out_file, 'w') as out:
                             for j in self.ls:
                                 out.write(str(j[0]) + ' ' + str(j[1]))
@@ -808,7 +813,7 @@ class MyRob(CRobLinkAngs):
                         start = (self.beacons_ls[0][0], self.beacons_ls[0][1])
                         end = (self.beacons_ls[1][0], self.beacons_ls[1][1])
                         self.ls = self.path_to_beacon(start, end)
-
+                        self.ls[-1] = (str(self.ls[-1][0]), str(self.ls[-1][1]) + ' #' + str(self.measures.ground))
                         with open(out_file, 'w') as out:
                             for j in self.ls:
                                 out.write(str(j[0]) + ' ' + str(j[1]))
@@ -1061,7 +1066,7 @@ class Map():
            i=i+1
 
 
-rob_name = "pClient2"
+rob_name = "pClient3"
 host = "localhost"
 pos = 1
 mapc = None
