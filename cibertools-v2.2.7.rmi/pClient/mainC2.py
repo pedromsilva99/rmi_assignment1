@@ -38,8 +38,6 @@ class MyRob(CRobLinkAngs):
         self.next_pos = (0, 0)
         self.walk = 0
         self.first_call = 1
-        self.count_intersection = 0
-        self.intersections_ls = []
         self.visited_squares = []
         self.squares_to_visit = []
         self.walls = []
@@ -52,19 +50,13 @@ class MyRob(CRobLinkAngs):
         self.complete_astar = False
         self.i = 1
 
-        # w, h = 55, 27
-        # self.matrix = [[' ' for x in range(w)] for y in range(h)]
-        # for i in self.matrix:
-        #     print(i)
         w, h = 55, 27
         self.matrix = [[' ' for x in range(w)] for y in range(h)]
         self.maze = [[1 for x in range(w)] for y in range(h)]
-        print(len(self.matrix[0]))
 
         for i in range(27):
             for j in range(55):
                 self.walls.append((j, i))
-        print(self.walls)
 
         self.go_left = False
         self.go_right = False
@@ -119,24 +111,18 @@ class MyRob(CRobLinkAngs):
         right_id = 2
         back_id = 3
 
-
+        # Calculates best path with astar
         if self.do_astar:
-            print('ENTROU NO DO ASTAR')
-
-            print(self.walls)
             min = 1000
 
             start = (self.pos[0], 26 - self.pos[1])
-            print("Start: " + str(start))
 
             for i in self.squares_to_visit:
                 a = AStar()
                 end = (i[1], i[0])
-                print("End: " + str(end))
                 a.init_grid(55, 27, self.walls, start, end)
 
                 path = a.solve()
-                #print(path)
 
                 try:
                     if len(path) < min:
@@ -144,26 +130,10 @@ class MyRob(CRobLinkAngs):
                         self.ls = path[::2]
                 except:
                     pass
-            print(self.ls)
-            # print(path)
-            #for i in self.matrix:
-            #    print(''.join(i))
-            #print(self.pos)
-            #self.go_to_this_pos(ls)
             self.do_astar=False
             self.go_to_ls = True
 
-            # start = (26 - self.pos[1], self.pos[0])
-            # end = self.squares_to_visit[0]
-            # # end = (13, 29)
-            # maze = self.maze
-            # print('START: ' + str(start))
-            # print('END: ' + str(end))
-            # print('MAZE: ' + str(maze))
-            # path = astar(maze, start, end)
-            # print('Caminho do labirinto: ' + str(path))
-            #exit()
-
+        # Does the path the astar returns
         if self.go_to_ls:
 
             if self.i == len(self.ls):
@@ -172,7 +142,6 @@ class MyRob(CRobLinkAngs):
                 self.next_pos = (0, 0)
                 self.go_to_ls = False
             else:
-
                 self.complete_astar = True
                 if (self.ls[self.i-1][0] < self.ls[self.i][0]):
                     self.next_pos = (self.last_pos[0]+2, self.last_pos[1])
@@ -182,8 +151,6 @@ class MyRob(CRobLinkAngs):
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
                 elif (self.ls[self.i-1][1] < self.ls[self.i][1]):
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
-
-                print("Next pos: " + str(self.next_pos))
 
                 self.go_front = False
                 self.go_left = False
@@ -229,24 +196,19 @@ class MyRob(CRobLinkAngs):
                 self.go_to_ls = False
                 self.i += 1
 
-            #exit()
-        # print(self.measures.compass)
-        # print("\n\n")
-        # print(self.visited_squares)
+        # Initial position values
         if self.init_val == 0:
             self.init_val = 1
             self.offset_x = self.measures.x
             self.offset_y = self.measures.y
             self.last_pos = (self.offset_x, self.offset_y)
             self.matrix[13][27] = 'O'
-            # self.maze[13][27] = 0
             if (27, 13) in self.walls:
                 self.walls.remove((27, 13))
             self.visited_squares.append((13, 27))
 
             if self.measures.irSensor[center_id] < 1.2:
                 self.matrix[13][28] = 'X'
-                # self.maze[13][28] = 0
                 try:
                     self.walls.remove((28, 13))
                     self.walls.remove((29, 13))
@@ -257,7 +219,6 @@ class MyRob(CRobLinkAngs):
                 self.matrix[13][28] = '|'
             if self.measures.irSensor[right_id] < 1.2:
                 self.matrix[27 - 13][27] = 'X'
-                # self.maze[27 - 13][27] = 0
                 try:
                     self.walls.remove((27, 27 - 13))
                     self.walls.remove((27, 28 - 13))
@@ -268,7 +229,6 @@ class MyRob(CRobLinkAngs):
                 self.matrix[27 - 13][27] = '-'
             if self.measures.irSensor[left_id] < 1.2:
                 self.matrix[25 - 13][27] = 'X'
-                # self.maze[25 - 13][27] = 0
                 try:
                     self.walls.remove((27, 25 - 13))
                     self.walls.remove((27, 24 - 13))
@@ -279,7 +239,6 @@ class MyRob(CRobLinkAngs):
                 self.matrix[25 - 13][27] = '-'
             if self.measures.irSensor[back_id] < 1.2:
                 self.matrix[13][26] = 'X'
-                # self.maze[13][26] = 0
                 try:
                     self.walls.remove((26, 13))
                     self.walls.remove((25, 13))
@@ -293,22 +252,15 @@ class MyRob(CRobLinkAngs):
         if self.squares_to_visit == []:
             self.finish()
 
+        # Prints the maze to an output file
         self.matrix[13][27] = 'I'
         with open(out_file, 'w') as out:
             for i in self.matrix:
                 out.write(''.join(i))
                 out.write('\n')
 
+        # The robot gets the next position to go to
         if self.next_pos == (0, 0):
-            if self.measures.irSensor[left_id] < 1.2:
-                self.count_intersection += 1
-            if self.measures.irSensor[center_id] < 1.2:
-                self.count_intersection += 1
-            if self.measures.irSensor[right_id] < 1.2:
-                self.count_intersection += 1
-            if self.measures.irSensor[back_id] < 1.2:
-                self.count_intersection += 1
-
             for t in self.visited_squares:
                 if t in self.squares_to_visit:
                     self.squares_to_visit.remove(t)
@@ -370,7 +322,6 @@ class MyRob(CRobLinkAngs):
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
-                    # self.maze[26 - self.pos[1]][self.pos[0] + 1] = 0
                     try:
                         self.walls.remove((self.pos[0] + 1, 26 - self.pos[1]))
                         self.walls.remove((self.pos[0] + 2, 26 - self.pos[1]))
@@ -382,7 +333,6 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass < 100 and self.measures.compass > 80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
-                    # self.maze[25 - self.pos[1]][self.pos[0]] = 0
                     try:
                         self.walls.remove((self.pos[0], 25 - self.pos[1]))
                         self.walls.remove((self.pos[0], 24 - self.pos[1]))
@@ -394,7 +344,6 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
-                    # self.maze[26 - self.pos[1]][self.pos[0] - 1] = 0
                     try:
                         self.walls.remove((self.pos[0] - 1, 26 - self.pos[1]))
                         self.walls.remove((self.pos[0] - 2, 26 - self.pos[1]))
@@ -406,7 +355,6 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
-                    # self.maze[27 - self.pos[1]][self.pos[0]] = 0
                     try:
                         self.walls.remove((self.pos[0], 27 - self.pos[1]))
                         self.walls.remove((self.pos[0], 28 - self.pos[1]))
@@ -419,7 +367,6 @@ class MyRob(CRobLinkAngs):
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
-                    # self.maze[27 - self.pos[1]][self.pos[0]] = 0
                     try:
                         self.walls.remove((self.pos[0], 27 - self.pos[1]))
                         self.walls.remove((self.pos[0], 28 - self.pos[1]))
@@ -427,12 +374,10 @@ class MyRob(CRobLinkAngs):
                         pass
                     if (28 - self.pos[1], self.pos[0]) not in self.squares_to_visit and (28 - self.pos[1], self.pos[0]) not in self.visited_squares:
                         self.squares_to_visit.append((28 - self.pos[1], self.pos[0]))
-                        #print('Direita ')
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
                 elif self.measures.compass < 100 and self.measures.compass > 80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
-                    # self.maze[26 - self.pos[1]][self.pos[0] + 1] = 0
                     try:
                         self.walls.remove((self.pos[0] + 1, 26 - self.pos[1]))
                         self.walls.remove((self.pos[0] + 2, 26 - self.pos[1]))
@@ -444,7 +389,6 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
-                    # self.maze[25 - self.pos[1]][self.pos[0]] = 0
                     try:
                         self.walls.remove((self.pos[0], 25 - self.pos[1]))
                         self.walls.remove((self.pos[0], 24 - self.pos[1]))
@@ -456,7 +400,6 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
-                    # self.maze[26 - self.pos[1]][self.pos[0] - 1] = 0
                     try:
                         self.walls.remove((self.pos[0] - 1, 26 - self.pos[1]))
                         self.walls.remove((self.pos[0] - 2, 26 - self.pos[1]))
@@ -465,11 +408,12 @@ class MyRob(CRobLinkAngs):
                     if (26 - self.pos[1], self.pos[0] - 2) not in self.squares_to_visit and (26 - self.pos[1], self.pos[0] - 2) not in self.visited_squares:
                         self.squares_to_visit.append((26 - self.pos[1], self.pos[0] - 2))
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
+
+            # If the left sensor is far from a wall, the robot goes to the left
             if self.measures.irSensor[left_id] < 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
-                    # self.maze[25 - self.pos[1]][self.pos[0]] = 0
                     try:
                         self.walls.remove((self.pos[0], 25 - self.pos[1]))
                         self.walls.remove((self.pos[0], 24 - self.pos[1]))
@@ -481,7 +425,6 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass < 100 and self.measures.compass > 80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
-                    # self.maze[26 - self.pos[1]][self.pos[0] - 1] = 0
                     try:
                         self.walls.remove((self.pos[0] - 1, 26 - self.pos[1]))
                         self.walls.remove((self.pos[0] - 2, 26 - self.pos[1]))
@@ -493,7 +436,6 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
-                    # self.maze[27 - self.pos[1]][self.pos[0]] = 0
                     try:
                         self.walls.remove((self.pos[0], 27 - self.pos[1]))
                         self.walls.remove((self.pos[0], 28 - self.pos[1]))
@@ -505,7 +447,6 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
-                    # self.maze[26 - self.pos[1]][self.pos[0] + 1] = 0
                     try:
                         self.walls.remove((self.pos[0] + 1, 26 - self.pos[1]))
                         self.walls.remove((self.pos[0] + 2, 26 - self.pos[1]))
@@ -514,16 +455,16 @@ class MyRob(CRobLinkAngs):
                     if (26 - self.pos[1], self.pos[0] + 2) not in self.squares_to_visit and (26 - self.pos[1], self.pos[0] + 2) not in self.visited_squares:
                         self.squares_to_visit.append((26 - self.pos[1], self.pos[0] + 2))
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
-                print('Next position: ' + str(self.next_pos))
                 self.go_front = False
                 self.go_left = True
                 self.go_right = False
                 self.go_back = False
+
+            # If the front sensor is far from a wall, the robot goes in front
             elif self.measures.irSensor[center_id] < 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
-                    # self.maze[26 - self.pos[1]][self.pos[0] + 1] = 0
                     try:
                         self.walls.remove((self.pos[0] + 1, 26 - self.pos[1]))
                         self.walls.remove((self.pos[0] + 2, 26 - self.pos[1]))
@@ -533,7 +474,6 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass < 100 and self.measures.compass > 80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
-                    # self.maze[25 - self.pos[1]][self.pos[0]] = 0
                     try:
                         self.walls.remove((self.pos[0], 25 - self.pos[1]))
                         self.walls.remove((self.pos[0], 24 - self.pos[1]))
@@ -543,7 +483,6 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
-                    # self.maze[26 - self.pos[1]][self.pos[0] - 1] = 0
                     try:
                         self.walls.remove((self.pos[0] - 1, 26 - self.pos[1]))
                         self.walls.remove((self.pos[0] - 2, 26 - self.pos[1]))
@@ -553,23 +492,22 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
-                    # self.maze[27 - self.pos[1]][self.pos[0]] = 0
                     try:
                         self.walls.remove((self.pos[0], 27 - self.pos[1]))
                         self.walls.remove((self.pos[0], 28 - self.pos[1]))
                     except:
                         pass
                     self.next_pos = (self.last_pos[0], self.last_pos[1] - 2)
-                print('Next position: ' + str(self.next_pos))
                 self.go_front = True
                 self.go_left = False
                 self.go_right = False
                 self.go_back = False
+
+            # If the right sensor is far from a wall, the robot goes to the right
             elif self.measures.irSensor[right_id] < 1.2:
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[27 - self.pos[1]][self.pos[0]] = 'X'
-                    # self.maze[27 - self.pos[1]][self.pos[0]] = 0
                     try:
                         self.walls.remove((self.pos[0], 27 - self.pos[1]))
                         self.walls.remove((self.pos[0], 28 - self.pos[1]))
@@ -579,7 +517,6 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass < 100 and self.measures.compass > 80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] + 1] = 'X'
-                    # self.maze[26 - self.pos[1]][self.pos[0] + 1] = 0
                     try:
                         self.walls.remove((self.pos[0] + 1, 26 - self.pos[1]))
                         self.walls.remove((self.pos[0] + 2, 26 - self.pos[1]))
@@ -589,7 +526,6 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass > 170 or self.measures.compass < -170:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[25 - self.pos[1]][self.pos[0]] = 'X'
-                    # self.maze[25 - self.pos[1]][self.pos[0]] = 0
                     try:
                         self.walls.remove((self.pos[0], 25 - self.pos[1]))
                         self.walls.remove((self.pos[0], 24 - self.pos[1]))
@@ -599,18 +535,17 @@ class MyRob(CRobLinkAngs):
                 elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.pos = ((int(self.last_pos[0]) - int(self.offset_x) + 27), int(self.last_pos[1]) - int(self.offset_y) + 13)
                     self.matrix[26 - self.pos[1]][self.pos[0] - 1] = 'X'
-                    # self.maze[26 - self.pos[1]][self.pos[0] - 1] = 0
                     try:
                         self.walls.remove((self.pos[0] - 1, 26 - self.pos[1]))
                         self.walls.remove((self.pos[0] - 2, 26 - self.pos[1]))
                     except:
                         pass
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
-                print('Next position: ' + str(self.next_pos))
                 self.go_front = False
                 self.go_left = False
                 self.go_right = True
                 self.go_back = False
+            # If the back sensor is far from a wall, the robot goes backwards
             else:
                 if self.measures.compass < 10 and self.measures.compass > -10:
                     self.next_pos = (self.last_pos[0] - 2, self.last_pos[1])
@@ -620,24 +555,21 @@ class MyRob(CRobLinkAngs):
                     self.next_pos = (self.last_pos[0] + 2, self.last_pos[1])
                 elif self.measures.compass > -100 and self.measures.compass < -80:
                     self.next_pos = (self.last_pos[0], self.last_pos[1] + 2)
-                print('Next position: ' + str(self.next_pos))
                 self.go_front = False
                 self.go_left = False
                 self.go_right = False
                 self.go_back = True
-            if self.count_intersection >= 3:
-                if (self.last_pos[0], self.last_pos[1]) not in self.intersections_ls:
-                    self.intersections_ls.append((self.last_pos[0], self.last_pos[1]))
-            print('To visit' + str(self.squares_to_visit))
+            print('To visit:' + str(self.squares_to_visit))
 
+        # If the robot has already been in the next position,
+        # it goes to the next closest known position it hasn't been in.
         next_position = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
         if (26-next_position[1],next_position[0]) in self.visited_squares[:-1] and not self.complete_astar:
-
             if self.flag == 0:
                 self.previous_pos=26-next_position[1],next_position[0]
                 self.flag = 1
                 self.previous += 1
-                #print("PREVIOUS " + str(self.previous))
+                # If so, does astar
                 if self.previous == 1:
                     self.do_astar = True
             if self.previous_pos!=(26-next_position[1],next_position[0]):
@@ -645,8 +577,8 @@ class MyRob(CRobLinkAngs):
         else:
             self.previous = 0
             self.flag = 0
-        self.count_intersection = 0
 
+        # If the robot is going to the left, turns accordingly
         if self.go_left:
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
@@ -668,26 +600,16 @@ class MyRob(CRobLinkAngs):
                     if self.turn(-90, 'left') == 1:
                         self.driveMotors(0.13, 0.13)
                         self.first_call = 0
+
+            # Checks if the robot has reached the correct cell
             if self.stop_movement(self.next_pos):
-
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
-
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
-                # self.maze[26 - self.pos[1]][self.pos[0]] = 0
                 if (self.pos[0], 26 - self.pos[1]) in self.walls:
                     self.walls.remove((self.pos[0], 26 - self.pos[1]))
 
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
-
-                for i in self.matrix:
-                    print(''.join(i))
-
-                # print(self.visited_squares)
-
-                # for i in self.maze:
-                #     print(i)
-
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
@@ -696,9 +618,7 @@ class MyRob(CRobLinkAngs):
                 else:
                     self.go_to_ls = True
 
-
-
-
+        # If the robot is going in front, turns accordingly
         if self.go_front:
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
@@ -720,23 +640,16 @@ class MyRob(CRobLinkAngs):
                     if self.turn(-90, 'left') == 1:
                         self.driveMotors(0.13, 0.13)
                         self.first_call = 0
+            # Checks if the robot has reached the correct cell
             if self.stop_movement(self.next_pos):
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
 
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
-                # self.maze[26 - self.pos[1]][self.pos[0]] = 0
                 if (self.pos[0], 26 - self.pos[1]) in self.walls:
                     self.walls.remove((self.pos[0], 26 - self.pos[1]))
 
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
-
-                # print(self.visited_squares)
-                for i in self.matrix:
-                    print(''.join(i))
-
-                # for i in self.maze:
-                #     print(i)
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
@@ -744,6 +657,7 @@ class MyRob(CRobLinkAngs):
                     self.next_pos = (0, 0)
                 else:
                     self.go_to_ls = True
+        # If the robot is going to the right, turns accordingly
         if self.go_right:
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
@@ -765,28 +679,16 @@ class MyRob(CRobLinkAngs):
                     if self.turn(-90, 'right') == 1:
                         self.driveMotors(0.13, 0.13)
                         self.first_call = 0
+            # Checks if the robot has reached the correct cell
             if self.stop_movement(self.next_pos):
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
 
-                # print('Stopped on position: ' + str(self.pos))
-                #
-                # print(self.pos[0])
-                # print(self.pos[1])
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
-                # self.maze[26 - self.pos[1]][self.pos[0]] = 0
                 if (self.pos[0], 26 - self.pos[1]) in self.walls:
                     self.walls.remove((self.pos[0], 26 - self.pos[1]))
 
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
-
-                # print(self.visited_squares)
-
-                for i in self.matrix:
-                    print(''.join(i))
-
-                # for i in self.maze:
-                #     print(i)
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
@@ -794,6 +696,7 @@ class MyRob(CRobLinkAngs):
                     self.next_pos = (0, 0)
                 else:
                     self.go_to_ls = True
+        # If the robot is going backwards, turns accordingly
         if self.go_back:
             if self.next_pos[0] > self.last_pos[0]:
                 if self.first_call:
@@ -815,28 +718,16 @@ class MyRob(CRobLinkAngs):
                     if self.turn(-90, 'left') == 1:
                         self.driveMotors(0.13, 0.13)
                         self.first_call = 0
+            # Checks if the robot has reached the correct cell
             if self.stop_movement(self.next_pos):
                 self.pos = ((int(self.next_pos[0]) - int(self.offset_x) + 27), int(self.next_pos[1]) - int(self.offset_y) + 13)
 
-                # print('Stopped on position: ' + str(self.pos))
-                #
-                # print(self.pos[0])
-                # print(self.pos[1])
                 self.matrix[26 - self.pos[1]][self.pos[0]] = 'X'
-                # self.maze[26 - self.pos[1]][self.pos[0]] = 0
                 if (self.pos[0], 26 - self.pos[1]) in self.walls:
                     self.walls.remove((self.pos[0], 26 - self.pos[1]))
 
                 if (26 - self.pos[1], self.pos[0]) not in self.visited_squares:
                     self.visited_squares.append((26 - self.pos[1], self.pos[0]))
-
-                # print(self.visited_squares)
-
-                for i in self.matrix:
-                    print(''.join(i))
-
-                # for i in self.maze:
-                #     print(i)
 
                 self.first_call = 1
                 self.last_pos = self.next_pos
@@ -846,6 +737,7 @@ class MyRob(CRobLinkAngs):
                 else:
                     self.go_to_ls = True
 
+    # Turns the robot to the correct direction
     def turn(self, degrees, direction):
         if(degrees == -180 or degrees == 180):
             if self.walk == 4:
@@ -1079,7 +971,7 @@ for i in range(1, len(sys.argv),2):
         rob_name = sys.argv[i + 1]
     elif (sys.argv[i] == "--map" or sys.argv[i] == "-m") and i != len(sys.argv) - 1:
         mapc = Map(sys.argv[i + 1])
-    elif (sys.argv[i] == "--map" or sys.argv[i] == "-f") and i != len(sys.argv) - 1:
+    elif (sys.argv[i] == "--outfile" or sys.argv[i] == "-f") and i != len(sys.argv) - 1:
         out_file = sys.argv[i + 1]
     else:
         print("Unkown argument", sys.argv[i])
